@@ -26,12 +26,17 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests((requests) -> requests
-                .requestMatchers("/registration").permitAll()
-                .anyRequest().hasAnyRole("ADMIN", "USER"))
-                .formLogin(login -> login.loginPage("/login").defaultSuccessUrl("/", true).permitAll())
+                        .requestMatchers("/css/**", "/fonts/**", "/js/**", "/images/**").permitAll()
+                        .requestMatchers("/").permitAll()
+                        .requestMatchers("/user").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/admin").hasRole("ADMIN")
+                        .requestMatchers("/registration").permitAll()
+                        .anyRequest().hasAnyRole("USER", "ADMIN"))
+                .formLogin((form) -> form.loginPage("/login").defaultSuccessUrl("/", true).permitAll())
                 .logout(LogoutConfigurer::permitAll);
+
         return http.build();
     }
 }
