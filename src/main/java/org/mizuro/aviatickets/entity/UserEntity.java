@@ -1,4 +1,4 @@
-package org.mizuro.onlinestore.entity;
+package org.mizuro.aviatickets.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;

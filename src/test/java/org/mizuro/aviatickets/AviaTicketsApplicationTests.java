@@ -1,4 +1,4 @@
-package org.mizuro.onlinestore;
+package org.mizuro.aviatickets;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

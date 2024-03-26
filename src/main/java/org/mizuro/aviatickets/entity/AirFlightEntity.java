@@ -1,4 +1,4 @@
-package org.mizuro.onlinestore.entity;
+package org.mizuro.aviatickets.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -14,7 +14,8 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-@Entity(name = "air_flights")
+@Entity
+@Table(name = "air_flights")
 public class AirFlightEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,12 +30,12 @@ public class AirFlightEntity {
     @JoinColumn(name = "destination_airport_id", referencedColumnName = "id")
     private AirportEntity destination;
 
-    @OneToMany(mappedBy = "airFlight", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "airFlight", fetch = FetchType.EAGER)
     private List<UserEntity> passengers;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @Temporal(TemporalType.DATE)
     @Column(name = "departure_date")
+    @Temporal(TemporalType.DATE)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date departureDate;
 
     @Temporal(TemporalType.DATE)
@@ -43,7 +44,7 @@ public class AirFlightEntity {
     private Date returnDate;
 
     @Column(name = "price")
-    private int price;
+    private int value;
 
     @Column(name = "trip_class")
     private int tripClass;
@@ -54,5 +55,18 @@ public class AirFlightEntity {
     @Column(name = "distance")
     private int distance;
 
-
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" +
+                "id = " + id + ", " +
+                "origin = " + origin + ", " +
+                "destination = " + destination + ", " +
+                "departureDate = " + departureDate + ", " +
+                "returnDate = " + returnDate + ", " +
+                "price = " + value + ", " +
+                "tripClass = " + tripClass + ", " +
+                "duration = " + duration + ", " +
+                "distance = " + distance + ")";
+    }
+    private boolean actual;
 }

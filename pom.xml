@@ -11,8 +11,8 @@
     <groupId>org.mizuro</groupId>
     <artifactId>AviaTickets</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>OnlineStore</name>
-    <description>OnlineStore</description>
+    <name>AviaTickets</name>
+    <description>AviaTickets</description>
     <properties>
         <java.version>17</java.version>
     </properties>
@@ -70,6 +70,11 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>jsr250-api</artifactId>
+            <version>1.0</version>
         </dependency>
     </dependencies>
 

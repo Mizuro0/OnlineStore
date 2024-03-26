@@ -1,8 +1,8 @@
-package org.mizuro.onlinestore.services;
+package org.mizuro.aviatickets.services;
 
 import lombok.AllArgsConstructor;
-import org.mizuro.onlinestore.entity.UserEntity;
-import org.mizuro.onlinestore.repo.UserEntityRepository;
+import org.mizuro.aviatickets.entity.UserEntity;
+import org.mizuro.aviatickets.repo.UserEntityRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

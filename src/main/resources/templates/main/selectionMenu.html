@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Airports</title>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+</head>
+<body>
+
+<div class="container mt-4">
+    <h2>Search Airports</h2>
+    <div class="form-group">
+        <label for="departureInput">Departure Airport:</label>
+        <input type="text" class="form-control" id="departureInput" placeholder="Enter departure city or airport name">
+        <input type="hidden" id="departureCode" name="departureCode">
+    </div>
+    <div class="form-group">
+        <label for="arrivalInput">Arrival Airport:</label>
+        <input type="text" class="form-control" id="arrivalInput" placeholder="Enter arrival city or airport name">
+        <input type="hidden" id="arrivalCode" name="arrivalCode">
+    </div>
+    <div class="form-group">
+        <label for="tripClass">Trip Class:</label>
+        <select class="form-control" id="tripClass">
+            <option value="0">Economy</option>
+            <option value="1">Business</option>
+            <option value="2">First Class</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="departDate">Departure Date:</label>
+        <input type="date" class="form-control" id="departDate">
+    </div>
+    <div class="form-group">
+        <label for="returnDate">Return Date:</label>
+        <input type="date" class="form-control" id="returnDate">
+    </div>
+    <button id="searchButton" class="btn btn-primary">Search Flights</button>
+    <div id="searchResults"></div> <!-- Container to display search results -->
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#departureInput, #arrivalInput").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: "/api/airports",
+                    dataType: "json",
+                    data: {
+                        searchTerm: request.term
+                    },
+                    success: function (data) {
+                        response(data.map(function (item) {
+                            return {
+                                label: item.name + " (" + item.city + ", " + item.country + ")",
+                                value: item.name,
+                                id: item.iataCode // Используем код IATA вместо id аэропорта
+                            };
+                        }));
+                    }
+                });
+            },
+            minLength: 2,
+            select: function (event, ui) {
+                $(this).siblings("input[type=hidden]").val(ui.item.id); // Передаем код IATA аэропорта
+            }
+        });
+
+        $('#searchButton').click(function () {
+            let departureIata = $('#departureCode').val();
+            let arrivalIata = $('#arrivalCode').val();
+            let tripClass = $('#tripClass').val();
+            let departDate = $('#departDate').val();
+            let returnDate = $('#returnDate').val();
+
+            if (departureIata && arrivalIata && tripClass && departDate && returnDate) {
+                let searchData = {
+                    originIata: departureIata, // Передаем код IATA аэропорта
+                    destinationIata: arrivalIata, // Передаем код IATA аэропорта
+                    tripClass: tripClass,
+                    departDate: departDate,
+                    returnDate: returnDate
+                };
+                $.ajax({
+                    type: 'GET',
+                    url: '/api/races',
+                    data: searchData,
+                    success: function (data) {
+                        console.log('Search results:', data);
+                        $('#searchResults').html('<pre>' + JSON.stringify(data, null, 2) + '</pre>');
+                    },
+                    error: function (error) {
+                        console.error('Error:', error);
+                        $('#searchResults').html('<div class="alert alert-danger">An error occurred while searching flights.</div>');
+                    }
+                });
+            } else {
+                $('#searchResults').html('<div class="alert alert-warning">Please fill in all fields.</div>');
+            }
+        });
+    });
+
+</script>
+
+</body>
+</html>

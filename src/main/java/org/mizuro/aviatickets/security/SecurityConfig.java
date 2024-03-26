@@ -1,4 +1,4 @@
-package org.mizuro.onlinestore.security;
+package org.mizuro.aviatickets.security;
 
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -11,11 +11,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-@EnableWebSecurity
+@EnableWebSecurity()
 @AllArgsConstructor
 public class SecurityConfig {
     private UserDetailsServiceImpl userDetailsService;
-    private BCryptPasswordEncoder bCryptPasswordEncoder() {return new BCryptPasswordEncoder();}
+
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {return new BCryptPasswordEncoder();}
 
     @Bean
     public DaoAuthenticationProvider daoAuthenticationProvider() {
@@ -33,8 +34,9 @@ public class SecurityConfig {
                         .requestMatchers("/user").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/admin").hasRole("ADMIN")
                         .requestMatchers("/registration").permitAll()
+                        .requestMatchers("/api/races").permitAll()
                         .anyRequest().hasAnyRole("USER", "ADMIN"))
-                .formLogin((form) -> form.loginPage("/login").defaultSuccessUrl("/", true).permitAll())
+                .formLogin((form) -> form.loginPage("/login").defaultSuccessUrl("/selectionMenu", true).permitAll())
                 .logout(LogoutConfigurer::permitAll);
 
         return http.build();

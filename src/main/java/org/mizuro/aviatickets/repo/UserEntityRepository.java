@@ -1,8 +1,7 @@
-package org.mizuro.onlinestore.repo;
+package org.mizuro.aviatickets.repo;
 
-import org.mizuro.onlinestore.entity.UserEntity;
+import org.mizuro.aviatickets.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;

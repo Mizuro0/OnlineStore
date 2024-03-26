@@ -1,10 +1,10 @@
-package org.mizuro.onlinestore.security;
+package org.mizuro.aviatickets.security;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.mizuro.onlinestore.entity.UserEntity;
+import org.mizuro.aviatickets.entity.UserEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

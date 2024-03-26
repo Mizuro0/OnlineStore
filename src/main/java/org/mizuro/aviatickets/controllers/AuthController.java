@@ -1,9 +1,9 @@
-package org.mizuro.onlinestore.controllers;
+package org.mizuro.aviatickets.controllers;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.mizuro.onlinestore.entity.UserEntity;
-import org.mizuro.onlinestore.services.UserService;
+import org.mizuro.aviatickets.entity.UserEntity;
+import org.mizuro.aviatickets.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;

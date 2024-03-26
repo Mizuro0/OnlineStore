@@ -1,12 +1,13 @@
-package org.mizuro.onlinestore.services;
+package org.mizuro.aviatickets.services;
 
 import lombok.AllArgsConstructor;
-import org.mizuro.onlinestore.entity.AirFlightEntity;
-import org.mizuro.onlinestore.repo.AirFlightRepository;
+import org.mizuro.aviatickets.entity.AirFlightEntity;
+import org.mizuro.aviatickets.repo.AirFlightRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.Date;
 
 @Service
 @AllArgsConstructor
@@ -27,6 +28,14 @@ public class AirFlightService {
         return airFlightRepository.findAll();
     }
 
+    @Transactional
+    public void deleteAllByActualFalse() {
+        airFlightRepository.deleteAllByActualFalse();
+    }
 
+    @Transactional
+    public void deleteAllByDepartureDateAndReturnDateBefore(Date departureDate, Date returnDate) {
+        airFlightRepository.deleteAllByDepartureDateAndReturnDateBefore(departureDate, returnDate);
+    }
 
 }

@@ -1,4 +1,4 @@
-package org.mizuro.onlinestore.entity;
+package org.mizuro.aviatickets.entity;
 
 public enum Role {
     ROLE_ADMIN,

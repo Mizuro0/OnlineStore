@@ -1,8 +1,8 @@
-package org.mizuro.onlinestore.security;
+package org.mizuro.aviatickets.security;
 
 import lombok.AllArgsConstructor;
-import org.mizuro.onlinestore.entity.UserEntity;
-import org.mizuro.onlinestore.services.UserService;
+import org.mizuro.aviatickets.entity.UserEntity;
+import org.mizuro.aviatickets.services.UserService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

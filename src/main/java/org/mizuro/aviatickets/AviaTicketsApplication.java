@@ -1,4 +1,4 @@
-package org.mizuro.onlinestore;
+package org.mizuro.aviatickets;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.SpringApplication;
