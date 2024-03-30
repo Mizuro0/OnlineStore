@@ -1,4 +1,4 @@
-package org.mizuro.aviatickets.dto;
+package org.mizuro.aviatickets.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

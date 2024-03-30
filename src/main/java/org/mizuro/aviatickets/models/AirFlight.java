@@ -1,4 +1,4 @@
-package org.mizuro.aviatickets.dto;
+package org.mizuro.aviatickets.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -10,7 +10,7 @@ import lombok.*;
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
 @ToString
-public class AirFlightDTO {
+public class AirFlight {
     @JsonProperty("depart_date")
     private String departDate;
     private String origin;

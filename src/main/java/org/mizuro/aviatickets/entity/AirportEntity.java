@@ -33,12 +33,5 @@ public class AirportEntity {
     @Column(name = "country")
     private String country;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "origin", fetch = FetchType.EAGER)
-    private List<AirFlightEntity> airFlights;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "destination", fetch = FetchType.EAGER)
-    private List<AirFlightEntity> airFlightDestinations;
 
 }

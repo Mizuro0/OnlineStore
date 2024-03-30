@@ -40,9 +40,6 @@ public class UserEntity {
     @Column(name = "role")
     private Role role = Role.ROLE_USER;
 
-    @ManyToOne
-    @JoinColumn(name = "tickets", referencedColumnName = "id")
-    private AirFlightEntity airFlight;
 
     @Column(name = "active")
     private boolean active = true;
