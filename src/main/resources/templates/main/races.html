@@ -2,9 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Races</title>
+    <link rel="stylesheet" type="text/css" href="../../static/css/main/races.css" th:href="@{/css/main/races.css}">
 </head>
 <body>
-
+<div>
+    <h1>Races</h1>
+    <div th:each="race : ${races}">
+        <a class="race" th:href="@{/races/{id}(id=${race.getRaceNumber()})}"><span id="originAirport" th:text="${race.getOrigin()}">origin</span>
+        <span id="destinationAirport" th:text="${race.getDestination()}">destination</span></a>
+    </div>
+</div>
 </body>
 </html>

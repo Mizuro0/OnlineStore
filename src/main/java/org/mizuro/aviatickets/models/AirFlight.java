@@ -1,8 +1,9 @@
-package org.mizuro.aviatickets.dto;
+package org.mizuro.aviatickets.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
+import org.mizuro.aviatickets.utils.RaceNumberGenerator;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -10,7 +11,8 @@ import lombok.*;
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
 @ToString
-public class AirFlightDTO {
+public class AirFlight {
+    public String raceNumber = RaceNumberGenerator.generate();
     @JsonProperty("depart_date")
     private String departDate;
     private String origin;

@@ -1,4 +1,4 @@
-package org.mizuro.aviatickets.dto;
+package org.mizuro.aviatickets.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,8 +11,8 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-public class FlightDataDTO {
-    private List<AirFlightDTO> data;
+public class FlightData {
+    private List<AirFlight> data;
     private String currency;
     private boolean success;
 }

@@ -1,6 +1,8 @@
 package org.mizuro.aviatickets.security;
 
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -9,14 +11,19 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 @Configuration
-@EnableWebSecurity()
+@EnableWebSecurity
 @AllArgsConstructor
 public class SecurityConfig {
     private UserDetailsServiceImpl userDetailsService;
+    private final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
 
-    public BCryptPasswordEncoder bCryptPasswordEncoder() {return new BCryptPasswordEncoder();}
+    @Bean
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
     @Bean
     public DaoAuthenticationProvider daoAuthenticationProvider() {
@@ -28,17 +35,28 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/css/**", "/fonts/**", "/js/**", "/images/**").permitAll()
-                        .requestMatchers("/").permitAll()
-                        .requestMatchers("/user").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/admin").hasRole("ADMIN")
-                        .requestMatchers("/registration").permitAll()
-                        .requestMatchers("/api/races").permitAll()
-                        .anyRequest().hasAnyRole("USER", "ADMIN"))
-                .formLogin((form) -> form.loginPage("/login").defaultSuccessUrl("/selectionMenu", true).permitAll())
-                .logout(LogoutConfigurer::permitAll);
+        try {
+            http.authorizeHttpRequests(requests ->
+                            requests
+                                    .requestMatchers("/css/**", "/fonts/**", "/js/**", "/images/**").permitAll()
+                                    .requestMatchers("/", "/registration").permitAll()
+                                    .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
+                                    .requestMatchers("/admin/**").hasRole("ADMIN")
+                                    .requestMatchers("/api/races", "/api/racesList", "/races/addFoundedRaces").permitAll() // разрешаем доступ к обоим путям
+                                    .anyRequest().authenticated()
+                    )
+                    .formLogin(form ->
+                            form.loginPage("/login")
+                                    .defaultSuccessUrl("/races/selectionMenu", true)
+                                    .permitAll()
+                    )
+                    .logout(LogoutConfigurer::permitAll)
+                    .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).ignoringRequestMatchers("/races/addFoundedRaces"));
 
-        return http.build();
+            return http.build();
+        } catch (Exception e) {
+            logger.error("An error occurred while configuring security.", e);
+            throw e;
+        }
     }
 }

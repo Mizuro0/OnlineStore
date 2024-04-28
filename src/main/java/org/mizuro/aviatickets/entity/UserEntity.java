@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -40,14 +42,14 @@ public class UserEntity {
     @Column(name = "role")
     private Role role = Role.ROLE_USER;
 
-    @ManyToOne
-    @JoinColumn(name = "tickets", referencedColumnName = "id")
-    private AirFlightEntity airFlight;
 
     @Column(name = "active")
     private boolean active = true;
 
     @Column(name = "non_locked")
     private boolean nonLocked = true;
+
+    @OneToMany(mappedBy = "owner")
+    private List<TicketEntity> tickets;
 
 }
