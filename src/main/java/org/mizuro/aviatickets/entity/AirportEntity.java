@@ -1,6 +1,5 @@
 package org.mizuro.aviatickets.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,5 +32,10 @@ public class AirportEntity {
     @Column(name = "country")
     private String country;
 
+    @OneToMany(mappedBy = "from", fetch = FetchType.LAZY)
+    private List<TicketEntity> flights;
+
+    @OneToMany(mappedBy = "to", fetch = FetchType.LAZY)
+    private List<TicketEntity> backFlights;
 
 }

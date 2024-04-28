@@ -6,13 +6,13 @@ import org.mizuro.aviatickets.models.FlightData;
 import org.mizuro.aviatickets.services.AirportService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.mizuro.aviatickets.services.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 
@@ -22,6 +22,7 @@ import java.util.List;
 public class RacesController {
     private final Logger logger = LoggerFactory.getLogger(RacesController.class);
     private final AirportService airportService;
+    private final UserService userService;
     private List<AirFlight> airFlightList;
 
     @GetMapping("/selectionMenu")
@@ -35,6 +36,12 @@ public class RacesController {
         logger.info("Received request to get founded races: {}", flightData);
         airFlightList = flightData.getData();
         model.addAttribute("airFlights", airFlightList);
+        return "redirect:/races/foundedRaces";
+    }
+
+    @GetMapping("/foundedRaces")
+    public String getRacesPage(Model model) {
+        model.addAttribute("races", airFlightList);
         return "main/races";
     }
 }

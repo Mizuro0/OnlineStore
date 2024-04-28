@@ -51,7 +51,7 @@ public class SecurityConfig {
                                     .permitAll()
                     )
                     .logout(LogoutConfigurer::permitAll)
-                    .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()));
+                    .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).ignoringRequestMatchers("/races/addFoundedRaces"));
 
             return http.build();
         } catch (Exception e) {

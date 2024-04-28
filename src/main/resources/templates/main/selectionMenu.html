@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,84 +7,87 @@
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <!-- Add CSRF token meta tags -->
-    <meta name="_csrf" th:content="${_csrf.token}">
-    <meta name="_csrf_header" th:content="${_csrf.headerName}">
 </head>
 <body>
 
 <div class="container mt-4">
     <h2>Search Airports</h2>
-    <div class="form-group">
-        <label for="departureInput">Departure Airport:</label>
-        <input type="text" class="form-control" id="departureInput" placeholder="Enter departure city or airport name">
-        <input type="hidden" id="departureCode" name="departureCode">
-    </div>
-    <div class="form-group">
-        <label for="arrivalInput">Arrival Airport:</label>
-        <input type="text" class="form-control" id="arrivalInput" placeholder="Enter arrival city or airport name">
-        <input type="hidden" id="arrivalCode" name="arrivalCode">
-    </div>
-    <div class="form-group">
-        <label for="tripClass">Trip Class:</label>
-        <select class="form-control" id="tripClass">
-            <option value="0">Economy</option>
-            <option value="1">Business</option>
-            <option value="2">First Class</option>
-        </select>
-    </div>
-    <div class="form-group">
-        <label for="departDate">Departure Date:</label>
-        <input type="date" class="form-control" id="departDate">
-    </div>
-    <div class="form-group">
-        <label for="returnDate">Return Date:</label>
-        <input type="date" class="form-control" id="returnDate">
-    </div>
-    <button id="searchButton" class="btn btn-primary">Search Flights</button>
+    <!-- Форма для отправки запроса -->
+    <form id="searchForm" th:action="@{/api/racesList}" method="POST">
+        <input type="hidden" id="csrfToken" name="_csrf" th:value="${_csrf.token}">
+        <div class="form-group">
+            <label for="departureInput">Departure Airport:</label>
+            <input type="text" class="form-control" id="departureInput" name="originName" placeholder="Enter departure city or airport name">
+            <!-- Скрытое поле для передачи кода IATA -->
+            <input type="hidden" id="departureCode" name="originIata">
+        </div>
+        <div class="form-group">
+            <label for="arrivalInput">Arrival Airport:</label>
+            <input type="text" class="form-control" id="arrivalInput" name="destinationName" placeholder="Enter arrival city or airport name">
+            <!-- Скрытое поле для передачи кода IATA -->
+            <input type="hidden" id="arrivalCode" name="destinationIata">
+        </div>
+        <div class="form-group">
+            <label for="tripClass">Trip Class:</label>
+            <select class="form-control" id="tripClass" name="tripClass">
+                <option value="0">Economy</option>
+                <option value="1">Business</option>
+                <option value="2">First Class</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="departDate">Departure Date:</label>
+            <input type="date" class="form-control" id="departDate" name="departDate">
+        </div>
+        <div class="form-group">
+            <label for="returnDate">Return Date:</label>
+            <input type="date" class="form-control" id="returnDate" name="returnDate">
+        </div>
+        <button type="submit" class="btn btn-primary">Search Flights</button>
+    </form>
     <div id="searchResults"></div> <!-- Container to display search results -->
 </div>
 
+<!-- JavaScript для динамического поиска -->
 <script>
-    // Функция для отправки POST запроса
-    function sendPostRequest(requestData) {
-        $.ajax({
-            url: '/races/addFoundedRaces',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify(requestData),
-            beforeSend: function(xhr) {
-                // Получаем CSRF токен из мета тегов и добавляем его в заголовок запроса
-                var token = $("meta[name='_csrf']").attr("content");
-                var header = $("meta[name='_csrf_header']").attr("content");
-                xhr.setRequestHeader(header, token);
-            },
-            success: function(response) {
-                console.log('Search results:', response);
-                // Очистить содержимое страницы перед обновлением
-                window.location.replace("/main/races.html"); // Путь к файлу races.html внутри папки resources/templates/main
+    $(document).ready(function () {
+        $("#searchForm").submit(function (event) {
+            // Отменяем стандартное действие формы
+            event.preventDefault();
 
-                // $('#searchResults').html('<div class="alert alert-success">Search results: ' + JSON.stringify(response) + '</div>');});
-            },
+            // Получаем данные формы
+            var formData = $(this).serialize();
 
-            error: function(xhr, status, error) {
-                console.error('Error:', error);
-                $('#searchResults').html('<div class="alert alert-danger">An error occurred while searching flights.</div>');
-            }
+            // Логируем отправляемые данные
+            console.log("Form data:", formData);
+
+            // Отправляем POST запрос на сервер с CSRF токеном в заголовке
+            $.ajax({
+                url: '/api/racesList',
+                type: 'POST',
+                data: formData,
+                success: function (response) {
+                    console.log('Response from server:', response);
+                    // Перенаправляем на страницу foundedRaces
+                    window.location.href = '/races/foundedRaces';
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error:', error);
+                    // Обработка ошибки
+                }
+            });
         });
-    }
 
-    $(document).ready(function() {
         $("#departureInput, #arrivalInput").autocomplete({
-            source: function(request, response) {
+            source: function (request, response) {
                 $.ajax({
                     url: "/api/airports",
                     dataType: "json",
                     data: {
                         searchTerm: request.term
                     },
-                    success: function(data) {
-                        response(data.map(function(item) {
+                    success: function (data) {
+                        response(data.map(function (item) {
                             return {
                                 label: item.name + " (" + item.city + ", " + item.country + ")",
                                 value: item.name,
@@ -95,30 +98,11 @@
                 });
             },
             minLength: 2,
-            select: function(event, ui) {
+            select: function (event, ui) {
                 $(this).siblings("input[type=hidden]").val(ui.item.id);
-            }
-        });
-
-        $('#searchButton').click(function() {
-            let departureIata = $('#departureCode').val();
-            let arrivalIata = $('#arrivalCode').val();
-            let tripClass = $('#tripClass').val();
-            let departDate = $('#departDate').val();
-            let returnDate = $('#returnDate').val();
-
-            if (departureIata && arrivalIata && tripClass && departDate && returnDate) {
-                let searchData = {
-                    originIata: departureIata,
-                    destinationIata: arrivalIata,
-                    tripClass: tripClass,
-                    departDate: departDate,
-                    returnDate: returnDate
-                };
-
-                sendPostRequest(searchData);
-            } else {
-                $('#searchResults').html('<div class="alert alert-warning">Please fill in all fields.</div>');
+                // Установка названия аэропорта в текстовое поле
+                $(this).val(ui.item.value);
+                return false; // Предотвращаем автозаполнение текстового поля
             }
         });
     });
@@ -126,4 +110,3 @@
 
 </body>
 </html>
-

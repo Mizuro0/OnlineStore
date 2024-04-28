@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -46,5 +48,8 @@ public class UserEntity {
 
     @Column(name = "non_locked")
     private boolean nonLocked = true;
+
+    @OneToMany(mappedBy = "owner")
+    private List<TicketEntity> tickets;
 
 }

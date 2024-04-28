@@ -1,0 +1,6 @@
+.race {
+    display: flex;
+    width: 70%;
+    height: 150px;
+    justify-content: space-around;
+}

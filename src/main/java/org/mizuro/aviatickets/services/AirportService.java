@@ -3,6 +3,7 @@ package org.mizuro.aviatickets.services;
 import lombok.AllArgsConstructor;
 import org.mizuro.aviatickets.entity.AirportEntity;
 import org.mizuro.aviatickets.repo.AirportRepo;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,6 +12,7 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
+@Cacheable(value = "airports", unless = "#result == null")
 @Transactional(readOnly = true)
 public class AirportService {
     private final AirportRepo airportRepo;
