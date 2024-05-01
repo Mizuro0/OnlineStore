@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Documents</title>
+</head>
+<body>
+<div th:if="${userEntity.getPassport() == null}">
+    <form th:action="@{/personal/createPassport}" method="post" th:object="${passportEntity}">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+        <label>
+            <input type="text" th:field="*{name}" placeholder="Enter passport first name">
+        </label>
+        <label>
+            <input type="text" th:field="*{surname}" placeholder="Enter passport last name">
+        </label>
+        <label>
+            <input type="text" th:field="*{number}" placeholder="Enter passport number">
+        </label>
+        <label>
+            <input type="text" th:field="*{serial}" placeholder="Enter passport serial number">
+        </label>
+        <label>
+            <input type="text" th:field="*{expirationDate}" placeholder="Enter passport issue by">
+        </label>
+        <label>
+            <input type="text" th:field="*{issueDate}" placeholder="Enter passport issue date">
+        </label>
+        <label>
+            <input type="text" th:field="*{birthDate}" placeholder="Enter passport birth date">
+        </label>
+        <input type="submit" value="Create passport">
+    </form>
+    <label>
+        <input th:action="@{/personal/updatePage}" type="submit" value="Update passport" th:method="GET">
+    </label>
+</div>
+<div th:if="${userEntity.getPassport() != null}">
+    <p th:text="${userEntity.getPassport().getName()}">First name</p>
+    <p th:text="${userEntity.getPassport().getSurname()}">Last name</p>
+    <p th:text="${userEntity.getPassport().getBirthDate()}">Birthdate</p>
+    <p th:text="${userEntity.getPassport().getNumber()}">Number</p>
+    <p th:text="${userEntity.getPassport().getSerial()}">Serial</p>
+    <p th:text="${userEntity.getPassport().getIssueDate()}">Issue date</p>
+    <p th:text="${userEntity.getPassport().getExpirationDate()}">Expiration date</p>
+</div>
+</body>
+</html>

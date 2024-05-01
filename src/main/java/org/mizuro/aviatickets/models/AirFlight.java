@@ -12,24 +12,27 @@ import org.mizuro.aviatickets.utils.RaceNumberGenerator;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @ToString
 public class AirFlight {
-    public String raceNumber = RaceNumberGenerator.generate();
-    @JsonProperty("depart_date")
+    @JsonProperty("flight_number")
+    public String raceNumber;
+    @JsonProperty("departure_at")
     private String departDate;
+    @JsonProperty("origin_airport")
     private String origin;
+    @JsonProperty("destination_airport")
     private String destination;
-    private String gate;
-    @JsonProperty("return_date")
+    @JsonProperty("return_at")
     private String returnDate;
-    @JsonProperty("found_at")
-    private String foundAt;
-    @JsonProperty("trip_class")
-    private int tripClass;
-    private int value;
-    @JsonProperty("number_of_changes")
-    private int numberOfChanges;
+    @JsonProperty("price")
+    private int price;
+    @JsonProperty("return_transfers")
+    private int returnTransfers;
+    @JsonProperty("transfers")
+    private int transfers;
+    @JsonProperty("duration")
     private int duration;
-    private int distance;
-    @JsonProperty("show_to_affiliates")
-    private boolean showToAffiliates;
-    private boolean actual;
+    @JsonProperty("duration_to")
+    private int durationTo;
+    @JsonProperty("duration_back")
+    private int durationBack;
+
 }

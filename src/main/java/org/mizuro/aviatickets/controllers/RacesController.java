@@ -28,7 +28,7 @@ public class RacesController {
     @GetMapping("/selectionMenu")
     public String getRaces(Model model) {
         model.addAttribute("airports", airportService.getAirports());
-        return "main/selectionMenu";
+        return "races/selectionMenu";
     }
 
     @PostMapping("/addFoundedRaces")
@@ -42,6 +42,6 @@ public class RacesController {
     @GetMapping("/foundedRaces")
     public String getRacesPage(Model model) {
         model.addAttribute("races", airFlightList);
-        return "main/races";
+        return "races/foundedRaces";
     }
 }

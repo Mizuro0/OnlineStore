@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>History</title>
+</head>
+<body>
+  <div th:each="ticket : ${currentUsersTickets}">
+    <div th:if = "${ticket.isActual()}">
+    <h1>Actual tickets</h1>
+        <p th:text="${ticket.getFrom().getCity()}">departure</p>
+        <p th:text="${ticket.getTo().getCity()}">arrival</p>
+        <p th:text="${ticket.getSeat()}">seat</p>
+    </div>
+  </div>
+</body>
+</html>

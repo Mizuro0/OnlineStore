@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Personal Cabinet</title>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            let inputs = document.querySelectorAll('input.watch-change');
+            let originalValues = {};
+            inputs.forEach(input => {
+                originalValues[input.name] = input.value; // Сохраняем оригинальные значения
+                input.addEventListener('input', () => { // Добавляем слушатель событий для каждого поля
+                    let isChanged = Array.from(inputs).some(input => originalValues[input.name] !== input.value);
+                    document.getElementById('updateButton').style.display = isChanged ? 'block' : 'none'; // Показываем или скрываем кнопку
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+<div>
+    <form th:action="@{/personal/update}" th:method="PATCH">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+        <label>
+            Фамилия и Имя:
+            <br>
+            <input name="nickname" class="watch-change" th:value="${userEntity.getNickname()}">
+        </label>
+        <br>
+        <br>
+        <label>
+            Email:
+            <br>
+            <input name="email" class="watch-change" th:value="${userEntity.getEmail()}">
+        </label>
+        <br>
+        <button id="updateButton" style="display: none">Изменить</button>
+    </form>
+    <a th:href="@{/personal/history}">History</a>
+    <a th:href="@{/races/selectionMenu}">Races</a>
+</div>
+</body>
+</html>

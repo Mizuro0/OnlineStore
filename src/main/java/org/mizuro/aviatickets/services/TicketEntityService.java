@@ -27,4 +27,8 @@ public class TicketEntityService {
     public List<TicketEntity> getUsersTickets(UserEntity currentUser) {
         return ticketEntityRepository.findByOwner(currentUser);
     }
+
+    public List<TicketEntity> getActualUsersTickets(UserEntity currentUser, boolean actual) {
+        return ticketEntityRepository.findByOwnerAndActual(currentUser, actual);
+    }
 }

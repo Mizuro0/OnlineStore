@@ -5,7 +5,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id"
+)
 @Table(name = "tickets")
 @AllArgsConstructor
 @Getter
@@ -46,4 +52,6 @@ public class TicketEntity {
     @Column(name = "booking_status")
     private int bookingStatus;
 
+    @Column(name = "time_date")
+    private String timeDate;
 }

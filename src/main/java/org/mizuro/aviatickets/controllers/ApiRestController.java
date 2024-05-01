@@ -39,7 +39,8 @@ public class ApiRestController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
-        String apiUrl = "https://api.travelpayouts.com/v2/prices/week-matrix?currency=usd&trip_class=" + tripClass + "&origin=" + origin + "&destination=" + destination + "&show_to_affiliates=true&depart_date=" + departDate + "&return_date=" + returnDate + "&token=6ab5e091706e696e119afb698e40a511";
+//        String apiUrl2 = "https://api.travelpayouts.com/v2/prices/week-matrix?currency=usd&trip_class=" + tripClass + "&origin=" + origin + "&destination=" + destination + "&show_to_affiliates=true&depart_date=" + departDate + "&return_date=" + returnDate + "&token=6ab5e091706e696e119afb698e40a511"; // TODO: remove hardcoded token and outdated URL
+        String apiUrl = "https://api.travelpayouts.com/aviasales/v3/prices_for_dates?origin=" + origin + "&destination=" + destination + "&departure_at=" + departDate + "&return_at=" + returnDate + "&unique=false&sorting=price&direct=false&currency=rub&limit=30&page=1&one_way=true&token=6ab5e091706e696e119afb698e40a511";
         String controllerUrl = "http://localhost:8080/races/addFoundedRaces";
 
         try {

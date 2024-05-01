@@ -14,13 +14,5 @@ public class AviaTicketsApplication {
         SpringApplication.run(AviaTicketsApplication.class, args);
     }
 
-    @Bean
-    public ModelMapper modelMapper() {
-        return new ModelMapper();
-    }
 
-    @Bean
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
-    }
 }

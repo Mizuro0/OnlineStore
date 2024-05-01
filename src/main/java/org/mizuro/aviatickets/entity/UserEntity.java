@@ -10,7 +10,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id"
+)
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -42,6 +48,9 @@ public class UserEntity {
     @Column(name = "role")
     private Role role = Role.ROLE_USER;
 
+    @Column(name = "nickname")
+    @NotNull
+    private String nickname;
 
     @Column(name = "active")
     private boolean active = true;
@@ -49,7 +58,11 @@ public class UserEntity {
     @Column(name = "non_locked")
     private boolean nonLocked = true;
 
-    @OneToMany(mappedBy = "owner")
+    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
     private List<TicketEntity> tickets;
+
+    @OneToOne
+    @JoinColumn(name = "passport_id", referencedColumnName = "id", unique = true)
+    private PassportEntity passport;
 
 }
