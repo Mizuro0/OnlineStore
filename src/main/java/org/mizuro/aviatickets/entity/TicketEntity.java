@@ -1,13 +1,15 @@
 package org.mizuro.aviatickets.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+import java.time.Instant;
+import java.util.Date;
+
+@ToString
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "id"
@@ -46,12 +48,39 @@ public class TicketEntity {
     @Column(name = "seat")
     private String seat;
 
+    @Column(name = "price")
+    private int price;
+
     @Column(name = "etkt")
     private String etkt;
 
-    @Column(name = "booking_status")
-    private int bookingStatus;
 
-    @Column(name = "time_date")
-    private String timeDate;
+    @Column(name = "race_number")
+    private String raceNumber;
+
+    @Column(name = "return_transfers")
+    private int returnTransfers;
+
+    @NotNull
+    @Column(name = "transfers", nullable = false)
+    private int transfers;
+
+    @NotNull
+    @Column(name = "duration", nullable = false)
+    private int duration;
+
+    @Column(name = "duration_back")
+    private int durationBack;
+
+    @NotNull
+    @Column(name = "duration_to", nullable = false)
+    private int durationTo;
+
+    @Column(name = "return_date")
+    private String returnDate;
+
+    @NotNull
+    @Column(name = "departure_date", nullable = false)
+    private String departureDate;
+
 }

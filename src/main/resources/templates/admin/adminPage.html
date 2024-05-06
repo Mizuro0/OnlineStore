@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin</title>
+</head>
+<body>
+  <div>
+    <p th:text="${user.id}"></p>
+    <p th:text="${user.username}"></p>
+    <p th:text="${user.email}"></p>
+    <a th:href="@{/admin/allUsers}" th:text="All Users"></a>
+  </div>
+</body>
+</html>

@@ -3,7 +3,7 @@ package org.mizuro.aviatickets.models;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
-import org.mizuro.aviatickets.utils.RaceNumberGenerator;
+import org.mizuro.aviatickets.utils.Generator;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -12,6 +12,7 @@ import org.mizuro.aviatickets.utils.RaceNumberGenerator;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @ToString
 public class AirFlight {
+    private String id = Generator.generateId();
     @JsonProperty("flight_number")
     public String raceNumber;
     @JsonProperty("departure_at")

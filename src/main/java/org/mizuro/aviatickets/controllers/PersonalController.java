@@ -3,9 +3,9 @@ package org.mizuro.aviatickets.controllers;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.mizuro.aviatickets.entity.PassportEntity;
+import org.mizuro.aviatickets.entity.TicketEntity;
 import org.mizuro.aviatickets.entity.UserEntity;
 import org.mizuro.aviatickets.services.PassportService;
-import org.mizuro.aviatickets.utils.TicketActuator;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -14,6 +14,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.mizuro.aviatickets.services.UserService;
 import org.mizuro.aviatickets.services.TicketEntityService;
+
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.util.List;
 
 @Controller
 @RequestMapping("/personal")
@@ -35,8 +40,9 @@ public class PersonalController {
 
     @GetMapping("/history")
     public String getHistoryPage(Model model) {
-        TicketActuator.checkActual();
-        model.addAttribute("currentUsersTickets", ticketEntityService.getUsersTickets(userService.getCurrentUser()));
+        ticketEntityService.updateTicketsActualStatusForCurrentUser();
+        List<TicketEntity> usersTickets = ticketEntityService.getUsersTickets(userService.getCurrentUser());
+        model.addAttribute("currentUsersTickets", usersTickets);
         return "personal/history";
     }
 

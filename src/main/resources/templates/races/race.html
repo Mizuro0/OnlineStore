@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form th:action="@{/races/{id}/createTicket(id=${race.getId()})}" th:method="post" th:object="${race}">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+    <p th:text="${race.departDate}">Departure date</p>
+    <p th:text="${race.destination}">Destination</p>
+    <p th:text="${race.id}">Departure time</p>
+    <p th:text="${race.price}">Price</p>
+    <p th:text="${race.origin}">Seats</p>
+    <p th:text="${race.raceNumber}">Seats</p>
+
+    <div th:each="outer, outerStat : ${seats}">
+        <div th:each="inner, innerStat : ${outer}">
+            <label th:for="${'seat' + outerStat.index + 'inner' + innerStat.index}">
+                <input type="checkbox" th:name="seat" th:value="${inner.seat}" th:id="${'seat' + outerStat.index + 'inner' + innerStat.index}"/> <span th:text="${inner.seat}">Seat number</span>
+            </label>
+        </div>
+        <br>
+    </div>
+
+    <input type="submit" value="Create ticket">
+</form>
+</body>
+</html>

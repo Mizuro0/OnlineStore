@@ -9,8 +9,7 @@
 <div>
     <h1>Races</h1>
     <div th:each="race : ${races}">
-        <a class="race" th:href="@{/races/{id}(id=${race.getRaceNumber()})}"><span id="originAirport" th:text="${race.getOrigin()}">origin</span>
-        <span id="destinationAirport" th:text="${race.getDestination()}">destination</span></a>
+        <a class="race" th:href="@{/races/race/{id}(id=${race.getId()})}" th:text="${race.getId()}"> 1</a>
     </div>
 </div>
 </body>
