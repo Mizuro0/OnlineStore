@@ -60,10 +60,8 @@
             <label for="email" class="form-label">Email:</label>
             <input type="text" id="email" name="email" class="form-control watch-change" th:value="${userEntity.getEmail()}">
         </div>
-        <button id="updateButton" class="btn btn-primary" style="display: none">Изменить</button>
+        <button id="updateButton" class="btn btn-primary" style="display: none">Edit</button>
     </form>
-    <a th:href="@{/personal/history}" class="btn btn-secondary me-2">History</a>
-    <a th:href="@{/races/selectionMenu}" class="btn btn-secondary">Races</a>
 </div>
 <!-- Подключение Bootstrap JS (необходим для работы выпадающих списков и т.д.) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>

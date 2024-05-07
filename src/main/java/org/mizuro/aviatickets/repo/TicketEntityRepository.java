@@ -6,6 +6,7 @@ import org.mizuro.aviatickets.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -25,4 +26,8 @@ public interface TicketEntityRepository extends JpaRepository<TicketEntity, Inte
     List<TicketEntity> findAllByDateToIssue(String dateToIssue);
     List<TicketEntity> findAllByFrom(AirportEntity from);
     List<TicketEntity> findAllByTo(AirportEntity to);
+
+    @Modifying
+    @Query(value = "DELETE FROM tickets WHERE id = :ticketId", nativeQuery = true)
+    void deleteById(@Param("ticketId") int ticketId);
 }

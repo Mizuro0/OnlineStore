@@ -91,15 +91,22 @@ public class UserService {
         return userEntityRepository.findAll();
     }
 
+    @Transactional
     public void changeLock(int id) {
         UserEntity user = findById(id);
         user.setNonLocked(!findById(id).isNonLocked());
         userEntityRepository.save(user);
     }
 
+    @Transactional
     public void changeRole(int id) {
         UserEntity user = findById(id);
-        user.setRole(Role.ROLE_ADMIN);
+        user.setRole(Role.valueOf(user.getRole().name().equals("ROLE_USER") ? "ROLE_ADMIN" : "ROLE_USER"));
         userEntityRepository.save(user);
+    }
+
+    @Transactional
+    public void deleteById(int id) {
+        userEntityRepository.deleteById(id);
     }
 }

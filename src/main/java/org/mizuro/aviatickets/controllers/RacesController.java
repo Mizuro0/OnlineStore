@@ -31,6 +31,9 @@ public class RacesController {
 
     @GetMapping("/selectionMenu")
     public String getRaces(Model model) {
+        if (!userService.getCurrentUser().isNonLocked()) {
+            return "redirect:/logout";
+        }
         model.addAttribute("airports", airportService.getAirports());
         return "races/selectionMenu";
     }
@@ -49,19 +52,26 @@ public class RacesController {
 
     @GetMapping("/foundedRaces")
     public String getRacesPage(Model model) {
+        if (!userService.getCurrentUser().isNonLocked()) {
+            return "redirect:/logout";
+        }
         model.addAttribute("races", airFlightList);
         return "races/foundedRaces";
     }
 
     @GetMapping("/race/{id}")
     public String getRacesPage(@PathVariable("id") String id, Model model) {
-        Seat[][] seats = Seat.createSeats(6, 21);
+        if (!userService.getCurrentUser().isNonLocked()) {
+            return "redirect:/logout";
+        }
+        Seat[][] seats = Seat.createSeats(2, 12);
         AirFlight airFlight = airFlightList.stream()
                 .filter(a -> a.getId().equals(id))
                 .findFirst()
                 .orElse(null);
         logger.info("Received request to get race: {}", airFlight);
         model.addAttribute("race", airFlight);
+        assert airFlight != null;
         logger.info(airFlight.getOrigin() + " -> " + airFlight.getDestination());
         model.addAttribute("seats", seats);
         return "races/race";
@@ -69,7 +79,9 @@ public class RacesController {
 
     @PostMapping("/{id}/createTicket")
     public String addTicket(@PathVariable("id") String id, @RequestParam("seat") String seat) {
-
+        if (!userService.getCurrentUser().isNonLocked()) {
+            return "redirect:/logout";
+        }
         if(userService.getCurrentUser().getPassport() == null) {
             return "redirect:/personal/documents";
         }
@@ -77,6 +89,7 @@ public class RacesController {
         assert airFlight != null;
         TicketEntity ticket = Converter.convertToTicketEntity(airFlight);
         ticket.setSeat(seat);
+        
         logger.info("Received request to create ticket for race: {}", ticket);
         ticketService.save(ticket, airFlight, userService.getCurrentUser());
         return "redirect:/personal/cabinet";

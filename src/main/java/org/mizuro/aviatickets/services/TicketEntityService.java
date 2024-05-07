@@ -74,4 +74,9 @@ public class TicketEntityService {
             ticketEntityRepository.saveAll(tickets);
         }
     }
+
+    @Transactional
+    public void deleteById(int id) {
+        ticketEntityRepository.deleteById(id);
+    }
 }

@@ -33,6 +33,9 @@ public class PersonalController {
     private final CityService cityService;
     @GetMapping("/cabinet")
     public String getPersonalPage(Model model) {
+        if (!userService.getCurrentUser().isNonLocked()) {
+            return "redirect:/logout";
+        }
         model.addAttribute("userEntity", userService.getCurrentUser());
         logger.info("Personal page loaded: " + userService.getCurrentUser().getUsername());
         return "personal/cabinet";
@@ -40,6 +43,9 @@ public class PersonalController {
 
     @GetMapping("/history")
     public String getHistoryPage(Model model) {
+        if (!userService.getCurrentUser().isNonLocked()) {
+            return "redirect:/logout";
+        }
         ticketEntityService.updateTicketsActualStatusForCurrentUser();
         List<TicketEntity> usersTickets = ticketEntityService.getUsersTickets(userService.getCurrentUser());
         model.addAttribute("currentUsersTickets", usersTickets);
@@ -60,6 +66,9 @@ public class PersonalController {
 
     @GetMapping("/documents")
     public String getDocumentsPage(Model model) {
+        if (!userService.getCurrentUser().isNonLocked()) {
+            return "redirect:/logout";
+        }
         model.addAttribute("userEntity", userService.getCurrentUser());
         model.addAttribute("passportDto", new PassportDto());
         return "personal/documents";
@@ -122,6 +131,9 @@ public class PersonalController {
     @PostMapping("/createPassport")
     public String createPassport(@ModelAttribute("passportDto") @Valid PassportDto passportDto,
                                  Model model, BindingResult bindingResult) {
+        if (!userService.getCurrentUser().isNonLocked()) {
+            return "redirect:/logout";
+        }
         if (bindingResult.hasErrors()) {
             return "personal/documents";
         }
@@ -151,7 +163,10 @@ public class PersonalController {
 
     @GetMapping("/tickets/{id}")
     public String getTicketsPage(@PathVariable("id") int id, Model model) {
-        model.addAttribute("ticket", ticketEntityService.findById(id));
+        if (!userService.getCurrentUser().isNonLocked()) {
+            return "redirect:/logout";
+        }
+        model.addAttribute("ticket", ticketEntityService.findById(id).orElse(null));
         return "personal/ticket";
     }
 
@@ -168,5 +183,12 @@ public class PersonalController {
         }
         logger.info("Found {} countries", countries.size());
         return countries;
+    }
+
+    @DeleteMapping("/deleteTicket/{id}")
+    public String deleteTicket(@PathVariable("id") int id) {
+        logger.info("Received request to delete ticket: {}", id);
+        ticketEntityService.deleteById(id);
+        return "redirect:/personal/history";
     }
 }

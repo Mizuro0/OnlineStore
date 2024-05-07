@@ -5,13 +5,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 @Configuration
 @EnableWebSecurity
@@ -41,6 +45,7 @@ public class SecurityConfig {
                                     .requestMatchers("/css/**", "/fonts/**", "/js/**", "/images/**").permitAll()
                                     .requestMatchers("/", "/registration").permitAll()
                                     .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
+                                    .requestMatchers(HttpMethod.PATCH, "/admin/**").hasRole("ADMIN")
                                     .requestMatchers("/admin/**").hasRole("ADMIN")
                                     .requestMatchers("/api/races", "/api/racesList", "/races/addFoundedRaces").permitAll() // разрешаем доступ к обоим путям
                                     .anyRequest().authenticated()
@@ -58,5 +63,14 @@ public class SecurityConfig {
             logger.error("An error occurred while configuring security.", e);
             throw e;
         }
+    }
+    @Bean
+    public SessionRegistry sessionRegistry() {
+        return new SessionRegistryImpl();
+    }
+
+    @Bean
+    public HttpSessionEventPublisher httpSessionEventPublisher() {
+        return new HttpSessionEventPublisher();
     }
 }

@@ -43,7 +43,7 @@
         <div th:if="${ticket.isActual()} == true" class="card mb-3">
             <div class="card-body">
                 <h5 class="card-title" th:text="${ticket.getFrom().getCity()} + ' - ' + ${ticket.getTo().getCity()}"></h5>
-                <a th:href="@{/personal/tickets/{id}(id=${ticket.getId()})}" class="card-text">Seat: <span th:text="${ticket.getSeat()}"></span></a>
+                <a th:href="@{/personal/tickets/{id}(id=${ticket.getId()})}" class="card-text">Etkt: <span th:text="${ticket.getEtkt()}"></span></a>
             </div>
         </div>
     </div>

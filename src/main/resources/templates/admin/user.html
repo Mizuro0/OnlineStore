@@ -11,23 +11,28 @@
             font-family: Arial, sans-serif;
             padding: 20px;
         }
+
         .user-info {
             background-color: #f7f7f7;
             border: 1px solid #ddd;
             padding: 10px;
             margin-bottom: 20px;
         }
+
         .user-info p {
             margin-bottom: 5px;
         }
+
         .user-links {
             margin-top: 10px;
         }
+
         .user-links a {
             margin-right: 10px;
             color: #007bff;
             text-decoration: none;
         }
+
         .user-links a:hover {
             text-decoration: underline;
         }
@@ -72,11 +77,19 @@
         <p>Non-Locked: <span th:text="${user.nonLocked}"></span></p>
         <p>Active: <span th:text="${user.active}"></span></p>
         <p>Role: <span th:text="${user.role}"></span></p>
-        <div th:if="${user.role != 'ROLE_ADMIN'}" class="user-links">
-            <a th:href="@{/admin/changeLock/{id}(id=${user.id})}" th:if="${user.nonLocked == true}" th:text="LOCK"></a>
-            <a th:href="@{/admin/changeLock/{id}(id=${user.id})}" th:if="${user.nonLocked == false}" th:text="UNLOCK"></a>
-            <a th:href="@{/admin/changeRole/{id}(id=${user.id})}" th:text="${user.role}"></a>
-            <a th:href="@{/admin/deleteUser/{id}(id=${user.id})}" th:text="DELETE">Delete User</a>
+        <div th:if="${user.role.name() != 'ROLE_ADMIN'}" class="user-links">
+            <form th:method="PATCH" th:action="@{/admin/changeLock/{id}(id=${user.id})}" th:if="${user.nonLocked == true}">
+                <input type="submit" value="LOCK">
+            </form>
+            <form th:method="PATCH" th:action="@{/admin/changeLock/{id}(id=${user.id})}" th:if="${user.nonLocked == false}">
+                <input type="submit" value="UNLOCK">
+            </form>
+            <form th:method="PATCH" th:action="@{/admin/changeRole/{id}(id=${user.id})}">
+                <input type="submit" value="SET ADMIN ROLE">
+            </form>
+            <form th:method="DELETE" th:action="@{/admin/deleteUser/{id}(id=${user.id})}">
+                <input type="submit" value="DELETE">
+            </form>
         </div>
     </div>
     <a th:href="@{/admin/allUsers}" th:text="BACK"></a>
