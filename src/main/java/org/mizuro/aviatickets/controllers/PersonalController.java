@@ -2,22 +2,20 @@ package org.mizuro.aviatickets.controllers;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.mizuro.aviatickets.entity.PassportEntity;
-import org.mizuro.aviatickets.entity.TicketEntity;
-import org.mizuro.aviatickets.entity.UserEntity;
-import org.mizuro.aviatickets.services.PassportService;
+import org.mizuro.aviatickets.entity.*;
+import org.mizuro.aviatickets.models.PassportDto;
+import org.mizuro.aviatickets.models.SearchResultDto;
+import org.mizuro.aviatickets.services.*;
+import org.mizuro.aviatickets.utils.UserValidator;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.mizuro.aviatickets.services.UserService;
-import org.mizuro.aviatickets.services.TicketEntityService;
 
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -29,8 +27,10 @@ public class PersonalController {
     private final UserService userService;
     private final TicketEntityService ticketEntityService;
     private final PassportService passportService;
-
-
+    private final UserValidator userValidator;
+    private final CountryService countryService;
+    private final RegionService regionService;
+    private final CityService cityService;
     @GetMapping("/cabinet")
     public String getPersonalPage(Model model) {
         model.addAttribute("userEntity", userService.getCurrentUser());
@@ -47,8 +47,10 @@ public class PersonalController {
     }
 
     @PatchMapping("/update")
-    public String updateUser(@ModelAttribute("userEntity") @Valid UserEntity userEntity, BindingResult bindingResult) {
+    public String updateUser(@ModelAttribute("userEntity") @Valid UserEntity userEntity, Model model, BindingResult bindingResult) {
+        userValidator.validate(userEntity, bindingResult);
         if(bindingResult.hasErrors()) {
+            model.addAttribute("error", bindingResult.getAllErrors());
             logger.info("Binding errors: " + bindingResult.getAllErrors());
             return "personal/cabinet";
         }
@@ -59,34 +61,112 @@ public class PersonalController {
     @GetMapping("/documents")
     public String getDocumentsPage(Model model) {
         model.addAttribute("userEntity", userService.getCurrentUser());
+        model.addAttribute("passportDto", new PassportDto());
         return "personal/documents";
     }
 
-    @PostMapping("/personal/createPassport")
-    public String createPassport(@ModelAttribute("passportEntity") @Valid PassportEntity passport, BindingResult bindingResult) {
-        if(bindingResult.hasErrors()) {
-            logger.info("Binding errors: " + bindingResult.getAllErrors());
+    @GetMapping("/cities")
+    public ResponseEntity<List<SearchResultDto>> searchCities(@RequestParam("searchTerm") String searchTerm) {
+        List<CityEntity> cities = cityService.searchCities(searchTerm);
+        List<SearchResultDto> results = new ArrayList<>();
+        if (cities.size() > 10) {
+            cities = cities.subList(0, 10);
+        }
+        for (CityEntity city : cities) {
+            SearchResultDto result = new SearchResultDto();
+            result.setCity(city.getTitleRu());
+            if (city.getRegionId() != null) {
+                result.setRegion(cityService.findRegion(city).getTitleRu());
+                result.setCountry(cityService.findCountry(city).getTitleRu());
+            } else {
+                result.setCountry(cityService.findCountry(city).getTitleRu());
+            }
+            results.add(result);
+        }
+        return ResponseEntity.ok(results);
+    }
+
+    @GetMapping("/countries")
+    public ResponseEntity<List<CountryEntity>> searchCountries(@RequestParam("searchTerm") String searchTerm) {
+        List<CountryEntity> countries = countryService.findCountriesByTitle(searchTerm);
+        return ResponseEntity.ok(countries);
+    }
+
+    @GetMapping("/regions")
+    public ResponseEntity<List<SearchResultDto>> searchRegions(@RequestParam("searchTerm") String searchTerm) {
+        List<RegionEntity> regions = regionService.searchRegions(searchTerm);
+        List<SearchResultDto> results = new ArrayList<>();
+        if (regions.size() > 10) {
+            regions = regions.subList(0, 10);
+            for (RegionEntity region : regions) {
+                SearchResultDto result = new SearchResultDto();
+                if (region != null) {
+                    result.setRegion(region.getTitleRu());
+                    result.setCountry(regionService.getCountry(region).getTitleRu());
+                }
+                results.add(result);
+            }
+        } else {
+            for (RegionEntity region : regions) {
+                SearchResultDto result = new SearchResultDto();
+                if (region != null) {
+                    result.setRegion(region.getTitleRu());
+                    result.setCountry(regionService.getCountry(region).getTitleRu());
+                }
+                results.add(result);
+            }
+        }
+        return ResponseEntity.ok(results);
+    }
+
+    @PostMapping("/createPassport")
+    public String createPassport(@ModelAttribute("passportDto") @Valid PassportDto passportDto,
+                                 Model model, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
             return "personal/documents";
         }
-        passportService.save(passport, userService.getCurrentUser().getId());
+        PassportEntity passportEntity = new PassportEntity();
+        passportEntity.setName(passportDto.getName());
+        passportEntity.setSurname(passportDto.getSurname());
+        passportEntity.setDateOfBirth(passportDto.getBirthDate());
+        passportEntity.setNumber(passportDto.getNumber());
+        passportEntity.setSerial(passportDto.getSerial());
+        passportEntity.setIssueDate(passportDto.getIssueDate());
+        passportEntity.setExpirationDate(passportDto.getExpirationDate());
+        String country = passportDto.getNationality().trim();
+        String city = passportDto.getBirthPlaceCity().split(",")[0].trim();
+        passportEntity.setNationality(countryService.findCountryByTitle(country));
+        passportEntity.setBirthPlace(cityService.findCityByTitle(city));
+        passportService.save(passportEntity, userService.getCurrentUser().getId());
         return "redirect:/personal/documents";
     }
 
-    @GetMapping("/personal/updatePage")
-    public String updatePage(Model model) {
-        model.addAttribute("passport", userService.getCurrentUser().getPassport());
-        return "personal/updatePassport";
+
+    @DeleteMapping("/deletePassport")
+    public String deletePassport() {
+        logger.info("Received request to delete passport");
+        passportService.delete(userService.getCurrentUser().getPassport().getId());
+        return "redirect:/personal/documents";
     }
 
-    @PatchMapping("/personal/updatePassport")
-    public String updatePassport(@ModelAttribute("passportEntity") @Valid PassportEntity passport, BindingResult bindingResult) {
-        if(bindingResult.hasErrors()) {
-            logger.info("Binding errors: " + bindingResult.getAllErrors());
-            return "personal/updatePassport";
-        }
+    @GetMapping("/tickets/{id}")
+    public String getTicketsPage(@PathVariable("id") int id, Model model) {
+        model.addAttribute("ticket", ticketEntityService.findById(id));
+        return "personal/ticket";
+    }
 
-        userService.getCurrentUser().setPassport(passport);
-        userService.update(userService.getCurrentUser().getId(), userService.getCurrentUser());
-        return "redirect:/personal/cabinet";
+
+    @GetMapping("/countriesNationality")
+    @ResponseBody
+    public List<CountryEntity> getCountries(@RequestParam(value = "searchTerm", required = false) String searchTerm) {
+        logger.info("Received request to get countries");
+        List<CountryEntity> countries;
+        if (searchTerm != null && !searchTerm.isEmpty()) {
+            countries = countryService.findCountriesByTitle(searchTerm);
+        } else {
+            countries = List.of();
+        }
+        logger.info("Found {} countries", countries.size());
+        return countries;
     }
 }

@@ -36,7 +36,11 @@ public class RacesController {
     }
 
     @PostMapping("/addFoundedRaces")
-    public String getRacesPage(@RequestBody FlightData flightData, Model model) {
+    public String getRacesPage(@RequestBody FlightData flightData, Model model, BindingResult bindingResult) {
+        if(bindingResult.hasErrors()) {
+            model.addAttribute("error", bindingResult.getAllErrors());
+            return "races/selectionMenu";
+        }
         logger.info("Received request to get founded races: {}", flightData);
         airFlightList = flightData.getData();
         model.addAttribute("airFlights", airFlightList);
@@ -65,18 +69,16 @@ public class RacesController {
 
     @PostMapping("/{id}/createTicket")
     public String addTicket(@PathVariable("id") String id, @RequestParam("seat") String seat) {
+
         if(userService.getCurrentUser().getPassport() == null) {
             return "redirect:/personal/documents";
         }
         AirFlight airFlight = airFlightList.stream().filter(a -> a.getId().equals(id)).findFirst().orElse(null);
         assert airFlight != null;
         TicketEntity ticket = Converter.convertToTicketEntity(airFlight);
-        ticket.setFrom(airportService.findByIataCode(airFlight.getOrigin()).orElse(null));
-        ticket.setTo(airportService.findByIataCode(airFlight.getDestination()).orElse(null));
-        ticket.setOwner(userService.getCurrentUser());
         ticket.setSeat(seat);
         logger.info("Received request to create ticket for race: {}", ticket);
-        ticketService.save(ticket);
+        ticketService.save(ticket, airFlight, userService.getCurrentUser());
         return "redirect:/personal/cabinet";
     }
 

@@ -31,10 +31,10 @@ public class AuthController {
     }
 
     @PostMapping("/registration")
-    public String registration(@ModelAttribute("userEntity") @Valid UserEntity userEntity,
+    public String registration(@ModelAttribute("userEntity") @Valid UserEntity userEntity, Model model,
     BindingResult bindingResult) {
-
         if (bindingResult.hasErrors()) {
+            model.addAttribute("error", bindingResult.getAllErrors());
             return "auth/registration";
         }
         userService.save(userEntity);

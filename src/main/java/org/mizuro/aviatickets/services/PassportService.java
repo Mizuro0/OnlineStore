@@ -4,10 +4,13 @@ import lombok.AllArgsConstructor;
 import org.mizuro.aviatickets.entity.PassportEntity;
 import org.mizuro.aviatickets.entity.UserEntity;
 import org.mizuro.aviatickets.repo.PassportEntityRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -16,21 +19,20 @@ public class PassportService {
 
     private final PassportEntityRepository passportRepo;
     private final UserService userService;
+    private final Logger logger = LoggerFactory.getLogger(PassportService.class);
 
     @Transactional
     public void save(PassportEntity passportEntity, int owner_id) {
-        passportEntity.setOwner(userService.findById(owner_id));
+        passportEntity.setPerson(userService.findById(owner_id));
         passportRepo.save(passportEntity);
-        userService.getCurrentUser().setPassport(findByOwner(userService.getCurrentUser()));
-        userService.update(owner_id, userService.findById(owner_id));
     }
 
-    public PassportEntity findByOwner(UserEntity userEntity) {
-        return passportRepo.findByOwner(userService.getCurrentUser()).orElse(null);
+    public Optional<PassportEntity> findByOwner(UserEntity userEntity) {
+        return passportRepo.findByPerson(userService.getCurrentUser());
     }
 
-    public PassportEntity findById(int id) {
-        return passportRepo.findById(id).orElse(null);
+    public Optional<PassportEntity> findById(int id) {
+        return passportRepo.findById(id);
     }
 
     @Transactional
@@ -39,12 +41,12 @@ public class PassportService {
         passportRepo.save(passportEntity);
     }
 
-    public PassportEntity findByNumber(String number) {
-        return passportRepo.findByNumber(number).orElse(null);
+    public Optional<PassportEntity> findByNumber(String number) {
+        return passportRepo.findByNumber(number);
     }
 
-    public PassportEntity findBySerial(String serial) {
-        return passportRepo.findBySerial(serial).orElse(null);
+    public Optional<PassportEntity> findBySerial(String serial) {
+        return passportRepo.findBySerial(serial);
     }
 
     public List<PassportEntity> findAllByName(String name) {
@@ -56,10 +58,17 @@ public class PassportService {
     }
 
     public List<PassportEntity> findAllByBirthDate(String birthDate) {
-        return passportRepo.findAllByBirthDate(birthDate);
+        return passportRepo.findAllByDateOfBirth(birthDate);
     }
 
     public List<PassportEntity> findAll() {
         return passportRepo.findAll();
     }
+
+    @Transactional
+    public void delete(int id) {
+        logger.info("Deleting passport with id: " + id);
+        passportRepo.deleteById(id);
+    }
+
 }

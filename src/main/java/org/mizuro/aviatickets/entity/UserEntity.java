@@ -3,13 +3,17 @@ package org.mizuro.aviatickets.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
+
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
@@ -24,45 +28,49 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 @Setter
 @Table(name = "persons")
 public class UserEntity {
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "id", nullable = false)
     private int id;
 
+    @Size(max = 255)
     @NotNull
-    @Size(min = 6)
-    @Column(name = "username")
+    @Column(name = "username", nullable = false)
     private String username;
 
+    @Size(max = 255)
     @NotNull
-    @Size(min = 8)
-    @Column(name = "password")
+    @Column(name = "password", nullable = false)
     private String password;
 
+    @Size(max = 255)
     @NotNull
-    @Email
-    @Column(name = "email")
+    @Column(name = "email", nullable = false)
     private String email;
 
     @NotNull
     @Column(name = "role")
     private Role role = Role.ROLE_USER;
 
-    @Column(name = "nickname")
     @NotNull
-    private String nickname;
-
-    @Column(name = "active")
+    @Column(name = "active", nullable = false)
     private boolean active = true;
 
-    @Column(name = "non_locked")
+    @NotNull
+    @Column(name = "non_locked", nullable = false)
     private boolean nonLocked = true;
 
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
     private List<TicketEntity> tickets;
 
-    @OneToOne
-    @JoinColumn(name = "passport_id", referencedColumnName = "id", unique = true)
+
+    @Size(max = 255)
+    @Column(name = "nickname")
+    private String nickname;
+
+    @OneToOne(mappedBy = "person")
     private PassportEntity passport;
 
 }

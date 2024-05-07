@@ -4,10 +4,35 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" type="text/css" href="../../static/css/auth/login.css" th:href="@{/css/auth/login.css}"/>
+	<style>
+		body {
+			background-color: #f8f9fa;
+		}
+
+		input[type="submit"] {
+			background-color: #007bff;
+			color: #ffffff;
+			border: none; /* Убираем границу */
+		}
+
+		input[type="submit"]:hover {
+			background-color: #0056b3;
+		}
+
+		#sign_up {
+			background-color: #007bff;
+			color: #ffffff;
+			text-decoration: none; /* Убираем подчеркивание */
+		}
+
+		#sign_up:hover {
+			color: #0056b3;
+		}
+	</style>
 	<title>Login</title>
 </head>
 <body>
-<div th:if="${param.error}" style="color: red;">
+<div th:if="${param.error}">
 	Invalid username or password.
 </div>
 <div th:if="${param.logout}">

@@ -8,12 +8,12 @@ import org.mizuro.aviatickets.services.AirportService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
-
 
 @RestController
 @AllArgsConstructor
@@ -21,12 +21,11 @@ import java.util.List;
 public class ApiRestController {
 
     private final RestTemplate restTemplate;
-    private final AirportService airportService;;
-
+    private final AirportService airportService;
 
     private final Logger logger = LoggerFactory.getLogger(ApiRestController.class);
 
-    @PostMapping("/racesList")
+    @PostMapping(value = "/racesList", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public ResponseEntity<FlightData> sendRaces(HttpServletRequest request) {
         String origin = request.getParameter("originIata");
         String destination = request.getParameter("destinationIata");

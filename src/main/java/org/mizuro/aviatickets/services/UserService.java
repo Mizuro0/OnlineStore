@@ -90,4 +90,16 @@ public class UserService {
     public List<UserEntity> findAll() {
         return userEntityRepository.findAll();
     }
+
+    public void changeLock(int id) {
+        UserEntity user = findById(id);
+        user.setNonLocked(!findById(id).isNonLocked());
+        userEntityRepository.save(user);
+    }
+
+    public void changeRole(int id) {
+        UserEntity user = findById(id);
+        user.setRole(Role.ROLE_ADMIN);
+        userEntityRepository.save(user);
+    }
 }

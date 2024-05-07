@@ -3,6 +3,7 @@ package org.mizuro.aviatickets.services;
 import lombok.AllArgsConstructor;
 import org.mizuro.aviatickets.entity.TicketEntity;
 import org.mizuro.aviatickets.entity.UserEntity;
+import org.mizuro.aviatickets.models.AirFlight;
 import org.mizuro.aviatickets.repo.TicketEntityRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -17,18 +19,26 @@ import java.util.List;
 public class TicketEntityService {
     private final TicketEntityRepository ticketEntityRepository;
     private final UserService userService;
+    private final AirportService airportService;
+
+    public Optional<TicketEntity> findByEtkt(String etkt) {
+        return ticketEntityRepository.findByEtkt(etkt);
+    }
 
     @Transactional
-    public void save(TicketEntity ticketEntity) {
-        ticketEntityRepository.save(ticketEntity);
+    public void save(TicketEntity ticket, AirFlight airFlight, UserEntity currentUser) {
+        ticket.setFrom(airportService.findByIataCode(airFlight.getOrigin()).orElse(null));
+        ticket.setTo(airportService.findByIataCode(airFlight.getDestination()).orElse(null));
+        ticket.setOwner(currentUser);
+        ticketEntityRepository.save(ticket);
     }
 
     private List<TicketEntity> findAll() {
         return ticketEntityRepository.findAll();
     }
 
-    private TicketEntity findById(int id) {
-        return ticketEntityRepository.findById(id).orElse(null);
+    public Optional<TicketEntity> findById(int id) {
+        return ticketEntityRepository.findById(id);
     }
 
     public List<TicketEntity> getUsersTickets(UserEntity currentUser) {
