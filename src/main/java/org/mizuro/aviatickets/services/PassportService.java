@@ -1,74 +1,30 @@
 package org.mizuro.aviatickets.services;
 
-import lombok.AllArgsConstructor;
 import org.mizuro.aviatickets.entity.PassportEntity;
 import org.mizuro.aviatickets.entity.UserEntity;
-import org.mizuro.aviatickets.repo.PassportEntityRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.mizuro.aviatickets.models.PassportDto;
+import org.mizuro.aviatickets.models.SearchResultDto;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 import java.util.Optional;
 
-@Service
-@AllArgsConstructor
-@Transactional(readOnly = true)
-public class PassportService {
+public interface PassportService {
 
-    private final PassportEntityRepository passportRepo;
-    private final UserService userService;
-    private final Logger logger = LoggerFactory.getLogger(PassportService.class);
+    List<PassportEntity> findAll();
 
-    @Transactional
-    public void save(PassportEntity passportEntity, int owner_id) {
-        passportEntity.setPerson(userService.findById(owner_id));
-        passportRepo.save(passportEntity);
-    }
+    Optional<PassportEntity> findById(int id);
+    void save(PassportDto passportDto, int owner_id);
+    Optional<PassportEntity> findByOwner(UserEntity userEntity);
+    Optional<PassportEntity> findByNumber(String number);
+    Optional<PassportEntity> findBySerial(String serial);
+    List<PassportEntity> findAllByName(String name);
+    List<PassportEntity> findAllBySurname(String surname);
+    List<PassportEntity> findAllByBirthDate(String birthDate);
 
-    public Optional<PassportEntity> findByOwner(UserEntity userEntity) {
-        return passportRepo.findByPerson(userService.getCurrentUser());
-    }
+    ResponseEntity<List<SearchResultDto>> findBirthPlace(String searchTerm);
 
-    public Optional<PassportEntity> findById(int id) {
-        return passportRepo.findById(id);
-    }
 
-    @Transactional
-    public void update(int id, PassportEntity passportEntity) {
-        passportEntity.setId(id);
-        passportRepo.save(passportEntity);
-    }
-
-    public Optional<PassportEntity> findByNumber(String number) {
-        return passportRepo.findByNumber(number);
-    }
-
-    public Optional<PassportEntity> findBySerial(String serial) {
-        return passportRepo.findBySerial(serial);
-    }
-
-    public List<PassportEntity> findAllByName(String name) {
-        return passportRepo.findAllByName(name);
-    }
-
-    public List<PassportEntity> findAllBySurname(String surname) {
-        return passportRepo.findAllBySurname(surname);
-    }
-
-    public List<PassportEntity> findAllByBirthDate(String birthDate) {
-        return passportRepo.findAllByDateOfBirth(birthDate);
-    }
-
-    public List<PassportEntity> findAll() {
-        return passportRepo.findAll();
-    }
-
-    @Transactional
-    public void delete(int id) {
-        logger.info("Deleting passport with id: " + id);
-        passportRepo.deleteById(id);
-    }
-
+    void update(int id, PassportEntity passportEntity);
+    void delete(int id);
 }

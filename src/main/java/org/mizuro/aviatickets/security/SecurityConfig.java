@@ -45,9 +45,9 @@ public class SecurityConfig {
                                     .requestMatchers("/css/**", "/fonts/**", "/js/**", "/images/**").permitAll()
                                     .requestMatchers("/", "/registration").permitAll()
                                     .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
-                                    .requestMatchers(HttpMethod.PATCH, "/admin/**").hasRole("ADMIN")
+                                    .requestMatchers("GET", "POST", "PUT", "DELETE", "PATCH", "/admin/**").hasRole("ADMIN")
                                     .requestMatchers("/admin/**").hasRole("ADMIN")
-                                    .requestMatchers("/api/races", "/api/racesList", "/races/addFoundedRaces").permitAll() // разрешаем доступ к обоим путям
+                                    .requestMatchers("/api/races", "/api/racesList", "/races/addFoundedRaces").permitAll()
                                     .anyRequest().authenticated()
                     )
                     .formLogin(form ->

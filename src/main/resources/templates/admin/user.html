@@ -41,7 +41,7 @@
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
     <div class="container">
-        <a class="navbar-brand" href="#">Ticket Booking</a>
+        <a class="navbar-brand" th:href="@{/races/selectionMenu}">Ticket Booking</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -75,6 +75,7 @@
         <p>Nickname: <span th:text="${user.nickname}"></span></p>
         <p>Email: <span th:text="${user.email}"></span></p>
         <p>Non-Locked: <span th:text="${user.nonLocked}"></span></p>
+        <a class="user-links" th:href="@{/admin/user/{id}/documents(id=${user.id})}">Documents</a>
         <p>Active: <span th:text="${user.active}"></span></p>
         <p>Role: <span th:text="${user.role}"></span></p>
         <div th:if="${user.role.name() != 'ROLE_ADMIN'}" class="user-links">

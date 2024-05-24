@@ -6,11 +6,11 @@ import org.mizuro.aviatickets.models.AirFlight;
 import org.mizuro.aviatickets.models.FlightData;
 import org.mizuro.aviatickets.models.Seat;
 import org.mizuro.aviatickets.services.AirportService;
-import org.mizuro.aviatickets.services.TicketEntityService;
+import org.mizuro.aviatickets.services.TicketService;
+import org.mizuro.aviatickets.services.UserService;
 import org.mizuro.aviatickets.utils.Converter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.mizuro.aviatickets.services.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -24,17 +24,18 @@ import java.util.List;
 public class RacesController {
 
     private final Logger logger = LoggerFactory.getLogger(RacesController.class);
-    private final AirportService airportService;
-    private final UserService userService;
+    private final AirportService airportServiceImpl;
+    private final UserService userServiceImpl;
     private List<AirFlight> airFlightList;
-    private final TicketEntityService ticketService;
+    private final TicketService ticketService;
+    private final Converter converter;
 
     @GetMapping("/selectionMenu")
     public String getRaces(Model model) {
-        if (!userService.getCurrentUser().isNonLocked()) {
+        if (!userServiceImpl.getCurrentUser().isNonLocked()) {
             return "redirect:/logout";
         }
-        model.addAttribute("airports", airportService.getAirports());
+        model.addAttribute("airports", airportServiceImpl.getAirports());
         return "races/selectionMenu";
     }
 
@@ -52,7 +53,7 @@ public class RacesController {
 
     @GetMapping("/foundedRaces")
     public String getRacesPage(Model model) {
-        if (!userService.getCurrentUser().isNonLocked()) {
+        if (!userServiceImpl.getCurrentUser().isNonLocked()) {
             return "redirect:/logout";
         }
         model.addAttribute("races", airFlightList);
@@ -61,7 +62,7 @@ public class RacesController {
 
     @GetMapping("/race/{id}")
     public String getRacesPage(@PathVariable("id") String id, Model model) {
-        if (!userService.getCurrentUser().isNonLocked()) {
+        if (!userServiceImpl.getCurrentUser().isNonLocked()) {
             return "redirect:/logout";
         }
         Seat[][] seats = Seat.createSeats(2, 12);
@@ -79,20 +80,21 @@ public class RacesController {
 
     @PostMapping("/{id}/createTicket")
     public String addTicket(@PathVariable("id") String id, @RequestParam("seat") String seat) {
-        if (!userService.getCurrentUser().isNonLocked()) {
+        if (!userServiceImpl.getCurrentUser().isNonLocked()) {
             return "redirect:/logout";
         }
-        if(userService.getCurrentUser().getPassport() == null) {
+        if(userServiceImpl.getCurrentUser().getPassport() == null) {
             return "redirect:/personal/documents";
         }
         AirFlight airFlight = airFlightList.stream().filter(a -> a.getId().equals(id)).findFirst().orElse(null);
         assert airFlight != null;
-        TicketEntity ticket = Converter.convertToTicketEntity(airFlight);
+
+        TicketEntity ticket = converter.convertToTicketEntity(airFlight);
         ticket.setSeat(seat);
         
         logger.info("Received request to create ticket for race: {}", ticket);
-        ticketService.save(ticket, airFlight, userService.getCurrentUser());
-        return "redirect:/personal/cabinet";
+        ticketService.save(ticket, airFlight, userServiceImpl.getCurrentUser());
+        return "redirect:/personal/history";
     }
 
 }

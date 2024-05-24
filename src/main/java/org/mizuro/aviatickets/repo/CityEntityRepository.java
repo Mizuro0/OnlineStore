@@ -10,5 +10,5 @@ import java.util.Optional;
 public interface CityEntityRepository extends JpaRepository<CityEntity, Integer> {
     List<CityEntity> findByTitleRuContainingIgnoreCaseOrTitleUaContainingIgnoreCaseOrTitleEnContainingIgnoreCase(String title, String title1, String title2);
 
-    CityEntity findByTitleRu(String s);
+    Optional<CityEntity> findByTitleRu(String s);
 }

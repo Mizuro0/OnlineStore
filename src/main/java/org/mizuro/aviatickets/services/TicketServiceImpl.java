@@ -16,48 +16,56 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 @Transactional(readOnly = true)
-public class TicketEntityService {
+public class TicketServiceImpl implements TicketService {
     private final TicketEntityRepository ticketEntityRepository;
-    private final UserService userService;
-    private final AirportService airportService;
+    private final UserService userServiceImpl;
+    private final AirportService airportServiceImpl;
 
+    @Override
     public Optional<TicketEntity> findByEtkt(String etkt) {
         return ticketEntityRepository.findByEtkt(etkt);
     }
 
+    @Override
     @Transactional
     public void save(TicketEntity ticket, AirFlight airFlight, UserEntity currentUser) {
-        ticket.setFrom(airportService.findByIataCode(airFlight.getOrigin()).orElse(null));
-        ticket.setTo(airportService.findByIataCode(airFlight.getDestination()).orElse(null));
+        ticket.setFrom(airportServiceImpl.findByIataCode(airFlight.getOrigin()).orElse(null));
+        ticket.setTo(airportServiceImpl.findByIataCode(airFlight.getDestination()).orElse(null));
         ticket.setOwner(currentUser);
         ticketEntityRepository.save(ticket);
     }
 
-    private List<TicketEntity> findAll() {
+    @Override
+    public List<TicketEntity> findAll() {
         return ticketEntityRepository.findAll();
     }
 
+    @Override
     public Optional<TicketEntity> findById(int id) {
         return ticketEntityRepository.findById(id);
     }
 
+    @Override
     public List<TicketEntity> getUsersTickets(UserEntity currentUser) {
         return ticketEntityRepository.findByOwner(currentUser);
     }
 
+    @Override
     public List<TicketEntity> getActualUsersTickets(UserEntity currentUser, boolean actual) {
         return ticketEntityRepository.findByOwnerAndActual(currentUser, actual);
     }
 
+    @Override
     @Transactional
     public void update(int id, TicketEntity ticketEntity) {
         ticketEntity.setId(id);
         ticketEntityRepository.save(ticketEntity);
     }
 
+    @Override
     @Transactional
     public void updateTicketsActualStatusForCurrentUser() {
-        UserEntity currentUser = userService.getCurrentUser();
+        UserEntity currentUser = userServiceImpl.getCurrentUser();
         List<TicketEntity> tickets = ticketEntityRepository.findByOwner(currentUser);
         boolean isUpdated = false;
 
@@ -75,6 +83,7 @@ public class TicketEntityService {
         }
     }
 
+    @Override
     @Transactional
     public void deleteById(int id) {
         ticketEntityRepository.deleteById(id);

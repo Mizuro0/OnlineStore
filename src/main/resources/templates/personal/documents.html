@@ -30,7 +30,7 @@
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
     <div class="container">
-        <a class="navbar-brand" href="#">Ticket Booking</a>
+        <a class="navbar-brand" th:href="@{/races/selectionMenu}">Ticket Booking</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -66,39 +66,48 @@
             <div class="col-md-6">
                 <label for="name" class="form-label">First Name</label>
                 <input type="text" class="form-control" id="name" th:field="*{name}" required>
+                <span class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
             </div>
             <div class="col-md-6">
                 <label for="surname" class="form-label">Last Name</label>
                 <input type="text" class="form-control" id="surname" th:field="*{surname}" required>
+                <span class="text-danger" th:if="${#fields.hasErrors('surname')}" th:errors="*{surname}"></span>
             </div>
             <div class="col-md-6">
                 <label for="number" class="form-label">Number</label>
                 <input type="text" class="form-control" id="number" th:field="*{number}" required>
+                <span class="text-danger" th:if="${#fields.hasErrors('number')}" th:errors="*{number}"></span>
             </div>
             <div class="col-md-6">
                 <label for="serial" class="form-label">Serial</label>
                 <input type="text" class="form-control" id="serial" th:field="*{serial}" required>
+                <span class="text-danger" th:if="${#fields.hasErrors('serial')}" th:errors="*{serial}"></span>
             </div>
             <div class="col-md-6">
                 <label for="issueDate" class="form-label">Issue Date</label>
                 <input type="date" class="form-control" id="issueDate" th:field="*{issueDate}" required>
+                <span class="text-danger" th:if="${#fields.hasErrors('issueDate')}" th:errors="*{issueDate}"></span>
             </div>
             <div class="col-md-6">
                 <label for="expirationDate" class="form-label">Expiration Date</label>
                 <input type="date" class="form-control" id="expirationDate" th:field="*{expirationDate}" required>
+                <span class="text-danger" th:if="${#fields.hasErrors('expirationDate')}" th:errors="*{expirationDate}"></span>
             </div>
             <div class="col-md-6">
                 <label for="birthDate" class="form-label">Birth Date</label>
                 <input type="date" class="form-control" id="birthDate" th:field="*{birthDate}" required>
+                <span class="text-danger" th:if="${#fields.hasErrors('birthDate')}" th:errors="*{birthDate}"></span>
             </div>
             <div class="col-md-6">
                 <label for="nationality" class="form-label">Nationality</label>
                 <input type="text" class="form-control" id="nationality" th:field="*{nationality}" required>
+                <span class="text-danger" th:if="${#fields.hasErrors('nationality')}" th:errors="*{nationality}"></span>
                 <div id="nationalityResults" class="d-none"></div>
             </div>
             <div class="col-md-6">
                 <label for="birthPlace" class="form-label">Birth Place</label>
                 <input type="text" class="form-control" id="birthPlace" th:field="*{birthPlaceCity}" required>
+                <span class="text-danger" th:if="${#fields.hasErrors('birthPlaceCity')}" th:errors="*{birthPlaceCity}"></span>
                 <div id="birthPlaceResults" class="d-none"></div>
             </div>
 
@@ -184,9 +193,19 @@
         function updateBirthPlaceResults(data) {
             $("#birthPlaceResults").empty();
             data.forEach(function (item) {
-                var listItem = $("<div class='dropdown-item clickable'>" + item.city + ", " + item.region + ", " + item.country + "</div>");
+                var listItem;
+                if (item.region === "") {
+                    listItem = $("<div class='dropdown-item clickable'>" + item.city + ", " + item.country + "</div>");
+                } else {
+                    listItem = $("<div class='dropdown-item clickable'>" + item.city + ", " + item.region + ", " + item.country + "</div>");
+                }
+
                 listItem.click(function () {
-                    $("#birthPlace").val(item.city + ", " + item.region + ", " + item.country);
+                    if (item.region === "") {
+                        $("#birthPlace").val(item.city + ", " + item.country);
+                    } else {
+                        $("#birthPlace").val(item.city + ", " + item.region + ", " + item.country);
+                    }
                     $("#birthPlaceResults").empty().hide();
                 });
                 $("#birthPlaceResults").append(listItem);

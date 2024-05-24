@@ -36,17 +36,17 @@ public class UserEntity {
     private int id;
 
     @Size(max = 255)
-    @NotNull
+    @NotNull(message = "Username cannot be empty")
     @Column(name = "username", nullable = false)
     private String username;
 
     @Size(max = 255)
-    @NotNull
+    @NotNull(message = "Password cannot be empty")
     @Column(name = "password", nullable = false)
     private String password;
 
     @Size(max = 255)
-    @NotNull
+    @NotNull(message = "Email cannot be empty")
     @Column(name = "email", nullable = false)
     private String email;
 
@@ -65,7 +65,7 @@ public class UserEntity {
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
     private List<TicketEntity> tickets;
 
-
+    @NotNull(message = "Nickname cannot be empty")
     @Size(max = 255)
     @Column(name = "nickname")
     private String nickname;
@@ -73,4 +73,17 @@ public class UserEntity {
     @OneToOne(mappedBy = "person")
     private PassportEntity passport;
 
+    @Override
+    public String toString() {
+        return "UserEntity{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", email='" + email + '\'' +
+                ", role=" + role +
+                ", active=" + active +
+                ", nonLocked=" + nonLocked +
+                ", nickname='" + nickname + '\'' +
+                '}';
+    }
 }

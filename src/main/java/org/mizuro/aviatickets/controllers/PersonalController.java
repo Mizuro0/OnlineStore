@@ -6,16 +6,17 @@ import org.mizuro.aviatickets.entity.*;
 import org.mizuro.aviatickets.models.PassportDto;
 import org.mizuro.aviatickets.models.SearchResultDto;
 import org.mizuro.aviatickets.services.*;
-import org.mizuro.aviatickets.utils.UserValidator;
+import org.mizuro.aviatickets.utils.validators.PassportValidator;
+import org.mizuro.aviatickets.utils.validators.UserValidator;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -24,132 +25,93 @@ import java.util.List;
 public class PersonalController {
 
     private final Logger logger = LoggerFactory.getLogger(PersonalController.class);
-    private final UserService userService;
-    private final TicketEntityService ticketEntityService;
-    private final PassportService passportService;
+    private final UserService userServiceImpl;
+    private final TicketService ticketServiceImpl;
+    private final PassportService passportServiceImpl;
     private final UserValidator userValidator;
-    private final CountryService countryService;
-    private final RegionService regionService;
-    private final CityService cityService;
+    private final CountryService countryServiceImpl;
+    private final RegionService regionServiceImpl;
+    private final CityService cityServiceImpl;
+    private final PassportValidator passportValidator;
+
     @GetMapping("/cabinet")
     public String getPersonalPage(Model model) {
-        if (!userService.getCurrentUser().isNonLocked()) {
+        UserEntity currentUser = userServiceImpl.getCurrentUser();
+        if(currentUser == null || !currentUser.isNonLocked()) {
             return "redirect:/logout";
         }
-        model.addAttribute("userEntity", userService.getCurrentUser());
-        logger.info("Personal page loaded: " + userService.getCurrentUser().getUsername());
+
+        model.addAttribute("userEntity", currentUser);
+        BindingResult bindingResult = new BeanPropertyBindingResult(currentUser, "userEntity");
+        model.addAttribute("org.springframework.validation.BindingResult.userEntity", bindingResult);
+
         return "personal/cabinet";
     }
 
+
     @GetMapping("/history")
     public String getHistoryPage(Model model) {
-        if (!userService.getCurrentUser().isNonLocked()) {
+        if (!userServiceImpl.getCurrentUser().isNonLocked()) {
             return "redirect:/logout";
         }
-        ticketEntityService.updateTicketsActualStatusForCurrentUser();
-        List<TicketEntity> usersTickets = ticketEntityService.getUsersTickets(userService.getCurrentUser());
+        ticketServiceImpl.updateTicketsActualStatusForCurrentUser();
+        List<TicketEntity> usersTickets = ticketServiceImpl.getUsersTickets(userServiceImpl.getCurrentUser());
         model.addAttribute("currentUsersTickets", usersTickets);
         return "personal/history";
     }
 
-    @PatchMapping("/update")
-    public String updateUser(@ModelAttribute("userEntity") @Valid UserEntity userEntity, Model model, BindingResult bindingResult) {
-        userValidator.validate(userEntity, bindingResult);
-        if(bindingResult.hasErrors()) {
+    @PatchMapping("/{id}/update")
+    public String updateUser(@PathVariable("id") int id, @ModelAttribute("userEntity") @Valid UserEntity userEntity, Model model, BindingResult bindingResult) {
+        logger.info("Received request to update user: {}", userEntity);
+        if (bindingResult.hasErrors()) {
             model.addAttribute("error", bindingResult.getAllErrors());
             logger.info("Binding errors: " + bindingResult.getAllErrors());
             return "personal/cabinet";
         }
-        userService.update(userService.getCurrentUser().getId(), userEntity);
+        userServiceImpl.update(id, userEntity);
         return "redirect:/personal/cabinet";
     }
 
     @GetMapping("/documents")
     public String getDocumentsPage(Model model) {
-        if (!userService.getCurrentUser().isNonLocked()) {
+        if (!userServiceImpl.getCurrentUser().isNonLocked()) {
             return "redirect:/logout";
         }
-        model.addAttribute("userEntity", userService.getCurrentUser());
+        model.addAttribute("userEntity", userServiceImpl.getCurrentUser());
         model.addAttribute("passportDto", new PassportDto());
         return "personal/documents";
     }
 
     @GetMapping("/cities")
     public ResponseEntity<List<SearchResultDto>> searchCities(@RequestParam("searchTerm") String searchTerm) {
-        List<CityEntity> cities = cityService.searchCities(searchTerm);
-        List<SearchResultDto> results = new ArrayList<>();
-        if (cities.size() > 10) {
-            cities = cities.subList(0, 10);
-        }
-        for (CityEntity city : cities) {
-            SearchResultDto result = new SearchResultDto();
-            result.setCity(city.getTitleRu());
-            if (city.getRegionId() != null) {
-                result.setRegion(cityService.findRegion(city).getTitleRu());
-                result.setCountry(cityService.findCountry(city).getTitleRu());
-            } else {
-                result.setCountry(cityService.findCountry(city).getTitleRu());
-            }
-            results.add(result);
-        }
-        return ResponseEntity.ok(results);
+        List<SearchResultDto> searchResults = passportServiceImpl.findBirthPlace(searchTerm).getBody();
+        return passportServiceImpl.findBirthPlace(searchTerm);
     }
 
     @GetMapping("/countries")
     public ResponseEntity<List<CountryEntity>> searchCountries(@RequestParam("searchTerm") String searchTerm) {
-        List<CountryEntity> countries = countryService.findCountriesByTitle(searchTerm);
-        return ResponseEntity.ok(countries);
+        return ResponseEntity.ok(countryServiceImpl.findCountriesByTitle(searchTerm));
     }
 
     @GetMapping("/regions")
-    public ResponseEntity<List<SearchResultDto>> searchRegions(@RequestParam("searchTerm") String searchTerm) {
-        List<RegionEntity> regions = regionService.searchRegions(searchTerm);
-        List<SearchResultDto> results = new ArrayList<>();
-        if (regions.size() > 10) {
-            regions = regions.subList(0, 10);
-            for (RegionEntity region : regions) {
-                SearchResultDto result = new SearchResultDto();
-                if (region != null) {
-                    result.setRegion(region.getTitleRu());
-                    result.setCountry(regionService.getCountry(region).getTitleRu());
-                }
-                results.add(result);
-            }
-        } else {
-            for (RegionEntity region : regions) {
-                SearchResultDto result = new SearchResultDto();
-                if (region != null) {
-                    result.setRegion(region.getTitleRu());
-                    result.setCountry(regionService.getCountry(region).getTitleRu());
-                }
-                results.add(result);
-            }
-        }
-        return ResponseEntity.ok(results);
+    public ResponseEntity<List<RegionEntity>> searchRegions(@RequestParam("searchTerm") String searchTerm) {
+        return ResponseEntity.ok(regionServiceImpl.searchRegions(searchTerm));
     }
 
     @PostMapping("/createPassport")
     public String createPassport(@ModelAttribute("passportDto") @Valid PassportDto passportDto,
                                  Model model, BindingResult bindingResult) {
-        if (!userService.getCurrentUser().isNonLocked()) {
+        if (!userServiceImpl.getCurrentUser().isNonLocked()) {
             return "redirect:/logout";
         }
+        passportValidator.validate(passportDto, bindingResult);
         if (bindingResult.hasErrors()) {
+            model.addAttribute("error", bindingResult.getAllErrors());
+            logger.info("Binding errors: " + bindingResult.getAllErrors());
             return "personal/documents";
         }
-        PassportEntity passportEntity = new PassportEntity();
-        passportEntity.setName(passportDto.getName());
-        passportEntity.setSurname(passportDto.getSurname());
-        passportEntity.setDateOfBirth(passportDto.getBirthDate());
-        passportEntity.setNumber(passportDto.getNumber());
-        passportEntity.setSerial(passportDto.getSerial());
-        passportEntity.setIssueDate(passportDto.getIssueDate());
-        passportEntity.setExpirationDate(passportDto.getExpirationDate());
-        String country = passportDto.getNationality().trim();
-        String city = passportDto.getBirthPlaceCity().split(",")[0].trim();
-        passportEntity.setNationality(countryService.findCountryByTitle(country));
-        passportEntity.setBirthPlace(cityService.findCityByTitle(city));
-        passportService.save(passportEntity, userService.getCurrentUser().getId());
+        passportDto.setOwner(userServiceImpl.getCurrentUser());
+        passportServiceImpl.save(passportDto, userServiceImpl.getCurrentUser().getId());
         return "redirect:/personal/documents";
     }
 
@@ -157,16 +119,16 @@ public class PersonalController {
     @DeleteMapping("/deletePassport")
     public String deletePassport() {
         logger.info("Received request to delete passport");
-        passportService.delete(userService.getCurrentUser().getPassport().getId());
+        passportServiceImpl.delete(userServiceImpl.getCurrentUser().getPassport().getId());
         return "redirect:/personal/documents";
     }
 
     @GetMapping("/tickets/{id}")
     public String getTicketsPage(@PathVariable("id") int id, Model model) {
-        if (!userService.getCurrentUser().isNonLocked()) {
+        if (!userServiceImpl.getCurrentUser().isNonLocked()) {
             return "redirect:/logout";
         }
-        model.addAttribute("ticket", ticketEntityService.findById(id).orElse(null));
+        model.addAttribute("ticket", ticketServiceImpl.findById(id).orElse(null));
         return "personal/ticket";
     }
 
@@ -177,7 +139,7 @@ public class PersonalController {
         logger.info("Received request to get countries");
         List<CountryEntity> countries;
         if (searchTerm != null && !searchTerm.isEmpty()) {
-            countries = countryService.findCountriesByTitle(searchTerm);
+            countries = countryServiceImpl.findCountriesByTitle(searchTerm);
         } else {
             countries = List.of();
         }
@@ -188,7 +150,7 @@ public class PersonalController {
     @DeleteMapping("/deleteTicket/{id}")
     public String deleteTicket(@PathVariable("id") int id) {
         logger.info("Received request to delete ticket: {}", id);
-        ticketEntityService.deleteById(id);
+        ticketServiceImpl.deleteById(id);
         return "redirect:/personal/history";
     }
 }

@@ -22,13 +22,13 @@ public class PassportEntity {
     @Column(name = "id", nullable = false)
     private int id;
 
-    @Size(max = 255)
-    @NotNull
+    @Size(min = 4, max = 4, message = "Number must be 4 digits long")
+    @NotNull(message = "Number cannot be empty")
     @Column(name = "number", nullable = false)
     private String number;
 
-    @Size(max = 255)
-    @NotNull
+    @Size(min = 6, max = 6, message = "Serial must be 6 digits long")
+    @NotNull(message = "Serial cannot be empty")
     @Column(name = "serial", nullable = false)
     private String serial;
 
@@ -37,35 +37,35 @@ public class PassportEntity {
     private boolean active = true;
 
     @Size(max = 255)
-    @NotNull
+    @NotNull(message = "Name cannot be empty")
     @Column(name = "name", nullable = false)
     private String name;
 
     @Size(max = 255)
-    @NotNull
+    @NotNull(message = "Surname cannot be empty")
     @Column(name = "surname", nullable = false)
     private String surname;
 
-    @Size(max = 255)
-    @NotNull
+    @NotNull(message = "Issue date cannot be empty")
     @Column(name = "issue_date", nullable = false)
     private String issueDate;
 
-    @Size(max = 255)
-    @NotNull
+    @NotNull(message = "Expiration date cannot be empty")
     @Column(name = "expiration_date", nullable = false)
     private String expirationDate;
 
-    @Size(max = 255)
     @Column(name = "date_of_birth")
+    @NotNull(message = "Date of birth cannot be empty")
     private String dateOfBirth;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "nationality")
+    @NotNull(message = "Nationality cannot be empty, please specify nationality")
     private CountryEntity nationality;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "birth_place")
+    @NotNull(message = "Birth place cannot be empty, please specify birth place")
     private CityEntity birthPlace;
 
     @OneToOne(fetch = FetchType.EAGER)

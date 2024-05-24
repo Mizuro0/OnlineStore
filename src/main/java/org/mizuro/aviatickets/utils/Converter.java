@@ -1,15 +1,21 @@
 package org.mizuro.aviatickets.utils;
 
 import lombok.AllArgsConstructor;
+import org.mizuro.aviatickets.entity.PassportEntity;
 import org.mizuro.aviatickets.entity.TicketEntity;
 import org.mizuro.aviatickets.models.AirFlight;
-import org.mizuro.aviatickets.services.AirportService;
-import org.mizuro.aviatickets.services.UserService;
+import org.mizuro.aviatickets.models.PassportDto;
+import org.mizuro.aviatickets.services.CityService;
+import org.mizuro.aviatickets.services.CountryService;
+import org.springframework.stereotype.Component;
 
 @AllArgsConstructor
+@Component
 public class Converter {
+    private final CountryService countryServiceImpl;
+    private final CityService cityServiceImpl;
 
-    public static TicketEntity convertToTicketEntity(AirFlight airFlight) {
+    public TicketEntity convertToTicketEntity(AirFlight airFlight) {
         TicketEntity ticketEntity = new TicketEntity();
         ticketEntity.setDateToIssue(airFlight.getDepartDate());
         ticketEntity.setPrice(airFlight.getPrice());
@@ -24,5 +30,21 @@ public class Converter {
         ticketEntity.setDepartureDate(airFlight.getDepartDate());
         ticketEntity.setRaceNumber(airFlight.getRaceNumber());
         return ticketEntity;
+    }
+    public PassportEntity convertToPassportEntity(PassportDto passportDto) {
+        PassportEntity passportEntity = new PassportEntity();
+        passportEntity.setName(passportDto.getName());
+        passportEntity.setSurname(passportDto.getSurname());
+        passportEntity.setDateOfBirth(passportDto.getBirthDate());
+        passportEntity.setNumber(passportDto.getNumber());
+        passportEntity.setSerial(passportDto.getSerial());
+        passportEntity.setIssueDate(passportDto.getIssueDate());
+        passportEntity.setExpirationDate(passportDto.getExpirationDate());
+        String country = passportDto.getNationality().trim();
+        String city = passportDto.getBirthPlaceCity().split(",")[0].trim();
+        passportEntity.setNationality(countryServiceImpl.findCountryByTitle(country));
+        passportEntity.setBirthPlace(cityServiceImpl.findCityByTitle(city).orElseThrow(() -> new IllegalArgumentException("City not found")));
+        passportEntity.setPerson(passportDto.getOwner());
+        return passportEntity;
     }
 }

@@ -1,6 +1,7 @@
 package org.mizuro.aviatickets.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;

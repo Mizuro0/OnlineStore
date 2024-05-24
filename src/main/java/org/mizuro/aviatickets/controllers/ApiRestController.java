@@ -8,7 +8,6 @@ import org.mizuro.aviatickets.services.AirportService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -21,7 +20,7 @@ import java.util.List;
 public class ApiRestController {
 
     private final RestTemplate restTemplate;
-    private final AirportService airportService;
+    private final AirportService airportServiceImpl;
 
     private final Logger logger = LoggerFactory.getLogger(ApiRestController.class);
 
@@ -63,7 +62,7 @@ public class ApiRestController {
         logger.info("Received request to search airports with search term: {}", searchTerm);
         List<AirportEntity> airports;
         if (searchTerm != null && !searchTerm.isEmpty()) {
-            airports = airportService.searchAirports(searchTerm);
+            airports = airportServiceImpl.searchAirports(searchTerm);
         } else {
             airports = List.of();
         }

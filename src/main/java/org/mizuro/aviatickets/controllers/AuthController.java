@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.mizuro.aviatickets.entity.UserEntity;
 import org.mizuro.aviatickets.services.UserService;
+import org.mizuro.aviatickets.utils.validators.UserValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -16,7 +17,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Controller
 @AllArgsConstructor
 public class AuthController {
-    private final UserService userService;
+    private final UserService userServiceImpl;
+    private final UserValidator userValidator;
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
     @GetMapping("/login")
@@ -33,11 +35,12 @@ public class AuthController {
     @PostMapping("/registration")
     public String registration(@ModelAttribute("userEntity") @Valid UserEntity userEntity, Model model,
     BindingResult bindingResult) {
+        userValidator.validate(userEntity, bindingResult);
         if (bindingResult.hasErrors()) {
             model.addAttribute("error", bindingResult.getAllErrors());
             return "auth/registration";
         }
-        userService.save(userEntity);
+        userServiceImpl.save(userEntity);
         return "redirect:/login";
     }
 
