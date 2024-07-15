@@ -15,7 +15,7 @@ import java.util.Date;
 
 @Component
 @AllArgsConstructor
-public class PassportValidator implements Validator {
+public final class PassportValidator implements Validator {
     private final PassportService passportService;
     private final CityService cityService;
     private final CountryService countryService;

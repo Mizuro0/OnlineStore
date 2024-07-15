@@ -9,19 +9,28 @@ public class Generator {
 
     public static String generateId() {
         Generator generator = new Generator();
-        StringBuilder raceNumber = new StringBuilder();
+        StringBuilder id = new StringBuilder();
         for (int i = 0; i < 18; i++) {
-            raceNumber.append(generator.symbols[(int) (Math.random() * generator.symbols.length)]);
+            id.append(generator.symbols[(int) (Math.random() * generator.symbols.length)]);
         }
-        return raceNumber.toString();
+        return id.toString();
     }
 
     public static String generateETKT() {
         Generator generator = new Generator();
-        StringBuilder raceNumber = new StringBuilder();
+        StringBuilder etkt = new StringBuilder();
         for (int i = 0; i < 13; i++) {
-            raceNumber.append(generator.symbols[(int) (Math.random() * generator.symbols.length)]);
+            etkt.append(generator.symbols[(int) (Math.random() * generator.symbols.length)]);
         }
-        return raceNumber.toString();
+        return etkt.toString();
+    }
+
+    public static String generateConfirmToken() {
+        Generator generator = new Generator();
+        StringBuilder token = new StringBuilder();
+        for (int i = 0; i < 32; i++) {
+            token.append(generator.symbols[(int) (Math.random() * generator.symbols.length)]);
+        }
+        return token.toString();
     }
 }

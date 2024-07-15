@@ -38,9 +38,8 @@ public class PersonalController {
     public String getPersonalPage(Model model) {
         UserEntity currentUser = userServiceImpl.getCurrentUser();
         if(currentUser == null || !currentUser.isNonLocked()) {
-            return "redirect:/logout";
+            return "redirect:/auth/logout";
         }
-
         model.addAttribute("userEntity", currentUser);
         BindingResult bindingResult = new BeanPropertyBindingResult(currentUser, "userEntity");
         model.addAttribute("org.springframework.validation.BindingResult.userEntity", bindingResult);
@@ -52,7 +51,7 @@ public class PersonalController {
     @GetMapping("/history")
     public String getHistoryPage(Model model) {
         if (!userServiceImpl.getCurrentUser().isNonLocked()) {
-            return "redirect:/logout";
+            return "redirect:/auth/logout";
         }
         ticketServiceImpl.updateTicketsActualStatusForCurrentUser();
         List<TicketEntity> usersTickets = ticketServiceImpl.getUsersTickets(userServiceImpl.getCurrentUser());
@@ -75,7 +74,7 @@ public class PersonalController {
     @GetMapping("/documents")
     public String getDocumentsPage(Model model) {
         if (!userServiceImpl.getCurrentUser().isNonLocked()) {
-            return "redirect:/logout";
+            return "redirect:/auth/logout";
         }
         model.addAttribute("userEntity", userServiceImpl.getCurrentUser());
         model.addAttribute("passportDto", new PassportDto());
@@ -102,7 +101,7 @@ public class PersonalController {
     public String createPassport(@ModelAttribute("passportDto") @Valid PassportDto passportDto,
                                  Model model, BindingResult bindingResult) {
         if (!userServiceImpl.getCurrentUser().isNonLocked()) {
-            return "redirect:/logout";
+            return "redirect:/auth/logout";
         }
         passportValidator.validate(passportDto, bindingResult);
         if (bindingResult.hasErrors()) {
@@ -126,7 +125,7 @@ public class PersonalController {
     @GetMapping("/tickets/{id}")
     public String getTicketsPage(@PathVariable("id") int id, Model model) {
         if (!userServiceImpl.getCurrentUser().isNonLocked()) {
-            return "redirect:/logout";
+            return "redirect:/auth/logout";
         }
         model.addAttribute("ticket", ticketServiceImpl.findById(id).orElse(null));
         return "personal/ticket";

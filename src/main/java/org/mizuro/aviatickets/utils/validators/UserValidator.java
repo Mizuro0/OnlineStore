@@ -10,7 +10,7 @@ import org.mizuro.aviatickets.services.UserServiceImpl;
 
 @Component
 @AllArgsConstructor
-public class UserValidator implements Validator {
+public final class UserValidator implements Validator {
     private final UserService userServiceImpl;
     @Override
     public boolean supports(Class<?> clazz) {

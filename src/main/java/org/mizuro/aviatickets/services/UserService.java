@@ -25,4 +25,6 @@ public interface UserService {
     List<UserEntity> findAllByNonLocked(boolean nonLocked);
     List<UserEntity> findAllByNickname(String nickname);
     boolean passwordStrengthCheck(String password);
+
+    void sendConfirmToken();
 }

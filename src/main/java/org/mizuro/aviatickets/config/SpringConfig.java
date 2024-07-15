@@ -16,7 +16,6 @@ import org.springframework.web.client.RestTemplate;
 @EnableScheduling
 @EnableCaching
 public class SpringConfig {
-    private final Logger logger = LoggerFactory.getLogger(SpringConfig.class);
     @Bean
     public ModelMapper modelMapper() {
         return new ModelMapper();

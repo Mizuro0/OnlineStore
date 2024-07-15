@@ -3,7 +3,10 @@ package org.mizuro.aviatickets.services;
 import lombok.AllArgsConstructor;
 import org.mizuro.aviatickets.entity.Role;
 import org.mizuro.aviatickets.entity.UserEntity;
+import org.mizuro.aviatickets.kafka.KafkaProducer;
+import org.mizuro.aviatickets.models.MailMessage;
 import org.mizuro.aviatickets.repo.UserEntityRepository;
+import org.mizuro.aviatickets.utils.Generator;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -21,6 +24,7 @@ import java.util.regex.Pattern;
 public class UserServiceImpl implements UserService {
 
     private final UserEntityRepository userEntityRepository;
+    private final KafkaProducer kafkaProducer;
 
     @Override
     public UserEntity getCurrentUser() {
@@ -87,6 +91,13 @@ public class UserServiceImpl implements UserService {
     public boolean passwordStrengthCheck(String password) {
         Pattern pattern = Pattern.compile("/(?=.*[0-9])(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z!@#$%^&*]{6,}/g");
         return pattern.matcher(password).matches();
+    }
+
+    @Override
+    public void sendConfirmToken() {
+        String token = Generator.generateConfirmToken();
+        MailMessage mailMessage = new MailMessage(getCurrentUser().getEmail(), "Registration", "Confirm your registration", token);
+        kafkaProducer.sendMessage(mailMessage);
     }
 
     @Override

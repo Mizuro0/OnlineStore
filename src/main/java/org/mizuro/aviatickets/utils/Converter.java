@@ -15,7 +15,7 @@ public class Converter {
     private final CountryService countryServiceImpl;
     private final CityService cityServiceImpl;
 
-    public TicketEntity convertToTicketEntity(AirFlight airFlight) {
+    public final TicketEntity convertToTicketEntity(AirFlight airFlight) {
         TicketEntity ticketEntity = new TicketEntity();
         ticketEntity.setDateToIssue(airFlight.getDepartDate());
         ticketEntity.setPrice(airFlight.getPrice());
@@ -31,7 +31,7 @@ public class Converter {
         ticketEntity.setRaceNumber(airFlight.getRaceNumber());
         return ticketEntity;
     }
-    public PassportEntity convertToPassportEntity(PassportDto passportDto) {
+    public final PassportEntity convertToPassportEntity(PassportDto passportDto) {
         PassportEntity passportEntity = new PassportEntity();
         passportEntity.setName(passportDto.getName());
         passportEntity.setSurname(passportDto.getSurname());

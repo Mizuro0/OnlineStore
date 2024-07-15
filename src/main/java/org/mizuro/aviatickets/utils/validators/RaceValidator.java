@@ -13,7 +13,7 @@ import java.util.Date;
 
 @AllArgsConstructor
 @Component
-public class RaceValidator implements Validator {
+public final class RaceValidator implements Validator {
     private final AirportService airportService;
     @Override
     public boolean supports(Class<?> clazz) {

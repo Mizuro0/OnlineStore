@@ -8,7 +8,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.io.InputStreamReader;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -70,5 +73,13 @@ public class CountryServiceImpl implements CountryService {
     @Override
     public CountryEntity findCountryByTitle(String nationality) {
         return countryRepository.findByTitleRuContainingIgnoreCaseOrTitleUaContainingIgnoreCaseOrTitleEnContainingIgnoreCase(nationality, nationality, nationality).stream().findFirst().orElse(null);
+    }
+
+    public String print(String i) {
+        return i;
+    }
+
+    public static String print(int i) {
+        return String.valueOf(i);
     }
 }

@@ -29,7 +29,7 @@ public class AdminController {
     @GetMapping("/adminPage")
     public String getAdminPage(Model model) {
         if(!userServiceImpl.getCurrentUser().isNonLocked() || !userServiceImpl.getCurrentUser().getRole().name().equals("ROLE_ADMIN") || userServiceImpl.getCurrentUser() == null) {
-            return "redirect:/logout";
+            return "redirect:/auth/logout";
         }
         model.addAttribute("user", userServiceImpl.getCurrentUser());
         return "admin/adminPage";
@@ -51,7 +51,7 @@ public class AdminController {
     @GetMapping("/user/{id}/documents")
     public String getUserDocuments(@PathVariable("id") int id, Model model) {
         if(!userServiceImpl.getCurrentUser().isNonLocked() || !userServiceImpl.getCurrentUser().getRole().name().equals("ROLE_ADMIN") || userServiceImpl.getCurrentUser() == null) {
-            return "redirect:/logout";
+            return "redirect:/auth/logout";
         }
         model.addAttribute("user", userServiceImpl.findById(id));
         return "admin/userDocuments";
@@ -60,7 +60,7 @@ public class AdminController {
     @GetMapping("/allUsers")
     public String getAllUsers(@RequestParam(value = "nonLocked", required = false) Boolean nonLocked, Model model) {
         if(!userServiceImpl.getCurrentUser().isNonLocked() || !userServiceImpl.getCurrentUser().getRole().name().equals("ROLE_ADMIN") || userServiceImpl.getCurrentUser() == null) {
-            return "redirect:/logout";
+            return "redirect:/auth/logout";
         }
         if (nonLocked != null) {
             model.addAttribute("users", userServiceImpl.findAllByNonLocked(nonLocked));
@@ -73,7 +73,7 @@ public class AdminController {
     @GetMapping("/user/{id}")
     public String getUserPage(@PathVariable("id") int id, Model model) {
         if(!userServiceImpl.getCurrentUser().isNonLocked() || !userServiceImpl.getCurrentUser().getRole().name().equals("ROLE_ADMIN") || userServiceImpl.getCurrentUser() == null) {
-            return "redirect:/logout";
+            return "redirect:/auth/logout";
         }
         model.addAttribute("user", userServiceImpl.findById(id));
         return "admin/user";
@@ -82,7 +82,7 @@ public class AdminController {
     @PatchMapping("/changeLock/{id}")
     public String changeLock(@PathVariable("id") int id, Model model) {
         if(!userServiceImpl.getCurrentUser().isNonLocked() || !userServiceImpl.getCurrentUser().getRole().name().equals("ROLE_ADMIN") || userServiceImpl.getCurrentUser() == null) {
-            return "redirect:/logout";
+            return "redirect:/auth/logout";
         }
         userServiceImpl.changeLock(id);
         return "redirect:/admin/user/" + id;
@@ -91,7 +91,7 @@ public class AdminController {
     @PatchMapping("/changeRole/{id}")
     public String changeRole(@PathVariable("id") int id, Model model) {
         if(!userServiceImpl.getCurrentUser().isNonLocked() || !userServiceImpl.getCurrentUser().getRole().name().equals("ROLE_ADMIN") || userServiceImpl.getCurrentUser() == null) {
-            return "redirect:/logout";
+            return "redirect:/auth/logout";
         }
         UserEntity user = userServiceImpl.findById(id);
         user.setNonLocked(true);
@@ -104,7 +104,7 @@ public class AdminController {
     @DeleteMapping("/deleteUser/{id}")
     public String deleteUser(@PathVariable("id") int id) {
         if(!userServiceImpl.getCurrentUser().isNonLocked() || !userServiceImpl.getCurrentUser().getRole().name().equals("ROLE_ADMIN") || userServiceImpl.getCurrentUser() == null) {
-            return "redirect:/logout";
+            return "redirect:/auth/logout";
         }
         userServiceImpl.deleteById(id);
         return "redirect:/admin/allUsers";

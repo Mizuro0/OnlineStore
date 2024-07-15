@@ -33,7 +33,7 @@ public class RacesController {
     @GetMapping("/selectionMenu")
     public String getRaces(Model model) {
         if (!userServiceImpl.getCurrentUser().isNonLocked()) {
-            return "redirect:/logout";
+            return "redirect:/auth/logout";
         }
         model.addAttribute("airports", airportServiceImpl.getAirports());
         return "races/selectionMenu";
@@ -54,7 +54,7 @@ public class RacesController {
     @GetMapping("/foundedRaces")
     public String getRacesPage(Model model) {
         if (!userServiceImpl.getCurrentUser().isNonLocked()) {
-            return "redirect:/logout";
+            return "redirect:/auth/logout";
         }
         model.addAttribute("races", airFlightList);
         return "races/foundedRaces";
@@ -63,7 +63,7 @@ public class RacesController {
     @GetMapping("/race/{id}")
     public String getRacesPage(@PathVariable("id") String id, Model model) {
         if (!userServiceImpl.getCurrentUser().isNonLocked()) {
-            return "redirect:/logout";
+            return "redirect:/auth/logout";
         }
         Seat[][] seats = Seat.createSeats(2, 12);
         AirFlight airFlight = airFlightList.stream()
@@ -81,7 +81,7 @@ public class RacesController {
     @PostMapping("/{id}/createTicket")
     public String addTicket(@PathVariable("id") String id, @RequestParam("seat") String seat) {
         if (!userServiceImpl.getCurrentUser().isNonLocked()) {
-            return "redirect:/logout";
+            return "redirect:/auth/logout";
         }
         if(userServiceImpl.getCurrentUser().getPassport() == null) {
             return "redirect:/personal/documents";

@@ -18,10 +18,11 @@
         #birthPlaceResults .dropdown-item {
             margin-bottom: 5px; /* Добавляет отступ между элементами списка */
         }
+
         #nationalityResults .dropdown-item:hover,
         #birthPlaceResults .dropdown-item:hover {
             background-color: #f0f0f0; /* Изменение цвета фона при наведении */
-            box-shadow: 0 0 5px rgba(0,0,0,0.1); /* Добавление тени при наведении */
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); /* Добавление тени при наведении */
         }
 
 
@@ -50,7 +51,7 @@
                     <a class="nav-link" th:href="@{/personal/documents}">Documents</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/logout}">Logout</a>
+                    <a class="nav-link" th:href="@{/auth/logout}">Logout</a>
                 </li>
             </ul>
         </div>
@@ -91,7 +92,8 @@
             <div class="col-md-6">
                 <label for="expirationDate" class="form-label">Expiration Date</label>
                 <input type="date" class="form-control" id="expirationDate" th:field="*{expirationDate}" required>
-                <span class="text-danger" th:if="${#fields.hasErrors('expirationDate')}" th:errors="*{expirationDate}"></span>
+                <span class="text-danger" th:if="${#fields.hasErrors('expirationDate')}"
+                      th:errors="*{expirationDate}"></span>
             </div>
             <div class="col-md-6">
                 <label for="birthDate" class="form-label">Birth Date</label>
@@ -107,7 +109,8 @@
             <div class="col-md-6">
                 <label for="birthPlace" class="form-label">Birth Place</label>
                 <input type="text" class="form-control" id="birthPlace" th:field="*{birthPlaceCity}" required>
-                <span class="text-danger" th:if="${#fields.hasErrors('birthPlaceCity')}" th:errors="*{birthPlaceCity}"></span>
+                <span class="text-danger" th:if="${#fields.hasErrors('birthPlaceCity')}"
+                      th:errors="*{birthPlaceCity}"></span>
                 <div id="birthPlaceResults" class="d-none"></div>
             </div>
 
